@@ -73,18 +73,18 @@ function AppContent() {
   const [workforceInitialTab, setWorkforceInitialTab] = useState('attendance');
   const [jumpToEquipmentId, setJumpToEquipmentId] = useState<string | null>(null);
 
-  // Data States
-  const [projects, setProjects] = useState([]);
-  const [clients, setClients] = useState([]);
-  const [transactions, setTransactions] = useState([]);
-  const [employees, setEmployees] = useState([]);
-  const [attendance, setAttendance] = useState([]);
-  const [equipment, setEquipment] = useState([]);
-  const [materials, setMaterials] = useState([]);
-  const [scenarios, setScenarios] = useState([]);
-  const [documents, setDocuments] = useState([]);
+  // Data States - Fixed with any[] to prevent "never[]" TypeScript errors
+  const [projects, setProjects] = useState<any[]>([]);
+  const [clients, setClients] = useState<any[]>([]);
+  const [transactions, setTransactions] = useState<any[]>([]);
+  const [employees, setEmployees] = useState<any[]>([]);
+  const [attendance, setAttendance] = useState<any[]>([]);
+  const [equipment, setEquipment] = useState<any[]>([]);
+  const [materials, setMaterials] = useState<any[]>([]);
+  const [scenarios, setScenarios] = useState<any[]>([]);
+  const [documents, setDocuments] = useState<any[]>([]);
 
-  const [modalState, setModalState] = useState({ type: null, data: null });
+  const [modalState, setModalState] = useState<{type: string | null, data: any}>({ type: null, data: null });
 
   const db = useFirestore();
   const firebaseAuth = useAuth();
