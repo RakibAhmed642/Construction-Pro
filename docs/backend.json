@@ -1,0 +1,192 @@
+
+{
+  "entities": {
+    "Project": {
+      "title": "Project",
+      "description": "A construction project managed by the system.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "clientId": { "type": "string", "description": "Link to the Client ID" },
+        "location": { "type": "string" },
+        "budget": { "type": "number" },
+        "status": { "type": "string", "enum": ["Planned", "Ongoing", "Completed", "On Hold"] },
+        "startDate": { "type": "string", "format": "date" },
+        "endDate": { "type": "string", "format": "date" },
+        "tasks": { "type": "array" },
+        "milestones": { "type": "array" },
+        "createdAt": { "type": "object" },
+        "updatedAt": { "type": "object" }
+      },
+      "required": ["name", "status", "clientId"]
+    },
+    "Client": {
+      "title": "Client",
+      "description": "A client associated with projects.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "phone": { "type": "string" },
+        "address": { "type": "string" },
+        "createdAt": { "type": "object" }
+      },
+      "required": ["name"]
+    },
+    "Employee": {
+      "title": "Employee",
+      "description": "A workforce member.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "role": { "type": "string" },
+        "phone": { "type": "string" },
+        "projectId": { "type": "string", "description": "Link to the Project ID" },
+        "status": { "type": "string", "enum": ["Active", "Inactive", "On Leave"] },
+        "imageUrl": { "type": "string" },
+        "totalPaid": { "type": "number" },
+        "createdAt": { "type": "object" }
+      },
+      "required": ["name", "role"]
+    },
+    "Transaction": {
+      "title": "Transaction",
+      "description": "A financial record.",
+      "type": "object",
+      "properties": {
+        "description": { "type": "string" },
+        "amount": { "type": "number" },
+        "type": { "type": "string", "enum": ["income", "expense"] },
+        "category": { "type": "string" },
+        "date": { "type": "string", "format": "date" },
+        "projectId": { "type": "string" },
+        "employeeId": { "type": "string" },
+        "paymentMethod": { "type": "string" },
+        "reference": { "type": "string" },
+        "createdAt": { "type": "object" }
+      },
+      "required": ["description", "amount", "type", "date"]
+    },
+    "Attendance": {
+      "title": "Attendance",
+      "description": "Daily attendance log.",
+      "type": "object",
+      "properties": {
+        "employeeId": { "type": "string" },
+        "projectId": { "type": "string" },
+        "date": { "type": "string", "format": "date" },
+        "checkIn": { "type": "string" },
+        "checkOut": { "type": "string" },
+        "status": { "type": "string" },
+        "overtime": { "type": "number" }
+      }
+    },
+    "Equipment": {
+      "title": "Equipment",
+      "description": "Machinery and tools.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "category": { "type": "string" },
+        "ownership": { "type": "string" },
+        "status": { "type": "string" },
+        "projectId": { "type": "string" },
+        "lastService": { "type": "string" },
+        "nextService": { "type": "string" }
+      }
+    },
+    "Material": {
+      "title": "Material",
+      "description": "Construction materials stock.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "unit": { "type": "string" },
+        "currentStock": { "type": "number" },
+        "reorderLevel": { "type": "number" },
+        "lastUpdated": { "type": "string" }
+      }
+    },
+    "ProjectDocument": {
+      "title": "Project Document",
+      "description": "A file attached to a project.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "fileUrl": { "type": "string" },
+        "fileType": { "type": "string" },
+        "projectId": { "type": "string" },
+        "createdAt": { "type": "object" }
+      },
+      "required": ["name", "fileUrl", "projectId"]
+    },
+    "Scenario": {
+      "title": "Scenario",
+      "description": "A saved business simulation scenario for Profit Pilot.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "date": { "type": "string" },
+        "data": { "type": "object" },
+        "createdAt": { "type": "object" }
+      },
+      "required": ["name", "data"]
+    },
+    "AppSetting": {
+      "title": "App Settings",
+      "description": "User-specific configuration.",
+      "type": "object",
+      "properties": {
+        "userName": { "type": "string" },
+        "businessName": { "type": "string" },
+        "payrollRates": { "type": "object" },
+        "overtimeMultiplier": { "type": "number" },
+        "roles": { "type": "array" }
+      }
+    }
+  },
+  "auth": {
+    "providers": ["password"]
+  },
+  "firestore": {
+    "/users/{userId}/projects/{projectId}": {
+      "schema": { "$ref": "#/entities/Project" },
+      "description": "User-specific projects."
+    },
+    "/users/{userId}/clients/{clientId}": {
+      "schema": { "$ref": "#/entities/Client" },
+      "description": "User-specific clients."
+    },
+    "/users/{userId}/employees/{employeeId}": {
+      "schema": { "$ref": "#/entities/Employee" },
+      "description": "User-specific employees."
+    },
+    "/users/{userId}/transactions/{transactionId}": {
+      "schema": { "$ref": "#/entities/Transaction" },
+      "description": "User-specific financial transactions."
+    },
+    "/users/{userId}/attendance/{attendanceId}": {
+      "schema": { "$ref": "#/entities/Attendance" },
+      "description": "User-specific attendance records."
+    },
+    "/users/{userId}/equipment/{equipmentId}": {
+      "schema": { "$ref": "#/entities/Equipment" },
+      "description": "User-specific equipment records."
+    },
+    "/users/{userId}/materials/{materialId}": {
+      "schema": { "$ref": "#/entities/Material" },
+      "description": "User-specific material stock records."
+    },
+    "/users/{userId}/documents/{documentId}": {
+      "schema": { "$ref": "#/entities/ProjectDocument" },
+      "description": "User-specific project documents."
+    },
+    "/users/{userId}/scenarios/{scenarioId}": {
+      "schema": { "$ref": "#/entities/Scenario" },
+      "description": "User-specific saved business scenarios."
+    },
+    "/users/{userId}/settings/config": {
+      "schema": { "$ref": "#/entities/AppSetting" },
+      "description": "User-specific configuration."
+    }
+  }
+}
