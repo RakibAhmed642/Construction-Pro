@@ -73,7 +73,7 @@ function AppContent() {
   const [workforceInitialTab, setWorkforceInitialTab] = useState('attendance');
   const [jumpToEquipmentId, setJumpToEquipmentId] = useState<string | null>(null);
 
-  // Data States - Fixed with any[] to prevent "never[]" TypeScript errors
+  // Data States - Typed with any[] to prevent "never[]" TypeScript errors
   const [projects, setProjects] = useState<any[]>([]);
   const [clients, setClients] = useState<any[]>([]);
   const [transactions, setTransactions] = useState<any[]>([]);
@@ -303,7 +303,7 @@ function AppContent() {
         </header>
         <main className="flex-1 overflow-y-auto p-4 lg:p-10">
           <div className="w-full">
-            {activeTab === 'dashboard' && <Dashboard projects={projects} clients={clients} transactions={transactions} employees={employees} equipment={equipment} attendance={attendance} materials={materials} onNavigate={handleNavigate} onQuickAdd={(type) => openModal(type)} />}
+            {activeTab === 'dashboard' && <Dashboard projects={projects} clients={clients} transactions={transactions} employees={employees} equipment={equipment} attendance={attendance} materials={materials} onNavigate={handleNavigate} onQuickAdd={(type: any) => openModal(type)} />}
             {activeTab === 'projects' && <Projects projects={projects} clients={clients} onAdd={(data) => handleAdd('projects', data)} onUpdate={(id, data) => handleUpdate('projects', id, data)} onDelete={(id) => handleDelete('projects', id)} employees={employees} transactions={transactions} equipment={equipment} attendance={attendance} materials={materials} documents={documents} onAddDocument={(data) => handleAdd('documents', data)} onDeleteDocument={(id) => handleDelete('documents', id)} onNavigate={handleNavigate} onOpenModal={openModal} />}
             {activeTab === 'employees' && <Employees employees={employees} projects={projects} transactions={transactions} attendance={attendance} onAdd={(data) => handleAdd('employees', data)} onUpdate={(id, data) => handleUpdate('employees', id, data)} onDelete={(id) => handleDelete('employees', id)} onOpenModal={openModal} initialEmployeeId={jumpToEmployeeId} onClearInitialEmployee={() => setJumpToEmployeeId(null)} />}
             {activeTab === 'clients' && <Clients clients={clients} projects={projects} transactions={transactions} onAdd={(data) => handleAdd('clients', data)} onUpdate={(id, data) => handleUpdate('clients', id, data)} onDelete={(id) => handleDelete('clients', id)} onOpenModal={openModal} />}
