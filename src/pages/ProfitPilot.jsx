@@ -14,7 +14,7 @@ const ProfitPilot = ({ scenarios = [], onAddScenario, onDeleteScenario }) => {
     const theme = context.theme || 'light';
     const T = context.translations ? context.translations[language] : {};
 
-    const [currency, setCurrency] = useState('BDT'); 
+    const [currency, setCurrency] = useState('BDT');
     const [showAdvanced, setShowAdvanced] = useState(false);
     const [showTable, setShowTable] = useState(false);
     const [toast, setToast] = useState({ show: false, msg: '' });
@@ -29,26 +29,26 @@ const ProfitPilot = ({ scenarios = [], onAddScenario, onDeleteScenario }) => {
     const chartInstances = useRef({ main: null, radar: null, dist: null, breakEven: null });
 
     const [config, setConfig] = useState({
-      preset: 'custom',
-      investment: 50000,
-      fixedCosts: 2000,
-      marketing: 1000,
-      margin: 25,
-      demand: 70,
-      growth: 5,
-      risk: 10,
-      loanAmount: 0,
-      interestRate: 10,
-      tax: 15,
-      customers: 100,
-      employees: 0,
-      seasonality: 'none'
+        preset: 'custom',
+        investment: 50000,
+        fixedCosts: 2000,
+        marketing: 1000,
+        margin: 25,
+        demand: 70,
+        growth: 5,
+        risk: 10,
+        loanAmount: 0,
+        interestRate: 10,
+        tax: 15,
+        customers: 100,
+        employees: 0,
+        seasonality: 'none'
     });
 
     const [outputs, setOutputs] = useState({
-      rowRev: 0, rowCOGS: 0, rowFixedMarketing: 0, rowInterest: 0, rowNet: 0,
-      kpis: {}, swot: { s: [], w: [], o: [], t: [] }, aiInsights: [], ledger: [], sensitivity: {},
-      charts: { labels: [], cashData: [], beRev: [], beCost: [], cogs: 0, opex: 0, tax: 0, profit: 0, roi: 0, efficiency: 0, scoreGrowth: 0, scoreSafety: 0 }
+        rowRev: 0, rowCOGS: 0, rowFixedMarketing: 0, rowInterest: 0, rowNet: 0,
+        kpis: {}, swot: { s: [], w: [], o: [], t: [] }, aiInsights: [], ledger: [], sensitivity: {},
+        charts: { labels: [], cashData: [], beRev: [], beCost: [], cogs: 0, opex: 0, tax: 0, profit: 0, roi: 0, efficiency: 0, scoreGrowth: 0, scoreSafety: 0 }
     });
 
     const presets = {
@@ -61,15 +61,15 @@ const ProfitPilot = ({ scenarios = [], onAddScenario, onDeleteScenario }) => {
     };
 
     const currencies = {
-      USD: { symbol: '$', locale: 'en-US', code: 'USD' },
-      BDT: { symbol: '৳', locale: 'bn-BD', code: 'BDT' },
-      EUR: { symbol: '€', locale: 'de-DE', code: 'EUR' }
+        USD: { symbol: '$', locale: 'en-US', code: 'USD' },
+        BDT: { symbol: '৳', locale: 'en-BD', code: 'BDT' },
+        EUR: { symbol: '€', locale: 'de-DE', code: 'EUR' }
     };
 
     const formatMoney = (num) => {
         const c = currencies[currency];
-        return new Intl.NumberFormat(c.locale, { 
-          style: 'currency', currency: c.code, maximumFractionDigits: 0, notation: "compact" 
+        return new Intl.NumberFormat(c.locale, {
+            style: 'currency', currency: c.code, maximumFractionDigits: 0, notation: "compact"
         }).format(num || 0);
     };
 
@@ -100,24 +100,24 @@ const ProfitPilot = ({ scenarios = [], onAddScenario, onDeleteScenario }) => {
             let chartLabels = [], chartCash = [], breakEvenRevData = [], breakEvenCostData = [], ledgerData = [];
             let baseMonthlyRev = Invest * (D / 100);
             const monthlyInterest = (Loan * (IntRate / 100)) / 12;
-            let sRev=0, sCOGS=0, sOpEx=0, sInt=0, sNet=0;
+            let sRev = 0, sCOGS = 0, sOpEx = 0, sInt = 0, sNet = 0;
 
             for (let i = 1; i <= 12; i++) {
-                let growthFactor = Math.pow(1 + (G/100), i-1);
+                let growthFactor = Math.pow(1 + (G / 100), i - 1);
                 let seasonalMultiplier = 1;
                 if (seasonality === 'seasonal') seasonalMultiplier = 1 + 0.3 * Math.sin((i - 1) * Math.PI / 6);
                 else if (seasonality === 'volatile') seasonalMultiplier = 0.8 + Math.random() * 0.4;
                 else if (seasonality === 'decay') seasonalMultiplier = 1.5 * Math.exp(-0.1 * i);
 
                 let monthlyRev = baseMonthlyRev * growthFactor * seasonalMultiplier;
-                let cogs = monthlyRev * (1 - PM/100);
-                let riskLoss = (monthlyRev - cogs) * (R/100);
+                let cogs = monthlyRev * (1 - PM / 100);
+                let riskLoss = (monthlyRev - cogs) * (R / 100);
                 let totalCOGS = cogs + riskLoss;
                 let opEx = Fixed + Marketing;
                 let totalCost = totalCOGS + opEx + monthlyInterest;
                 let ebitda = monthlyRev - totalCOGS - opEx;
                 let preTax = ebitda - monthlyInterest;
-                let taxVal = preTax > 0 ? preTax * (TaxRate/100) : 0;
+                let taxVal = preTax > 0 ? preTax * (TaxRate / 100) : 0;
                 let net = preTax - taxVal;
 
                 if (taxVal > 0) totalCost += taxVal;
@@ -127,7 +127,7 @@ const ProfitPilot = ({ scenarios = [], onAddScenario, onDeleteScenario }) => {
                 cash += net;
                 if (cash < lowestCash) lowestCash = cash;
                 if (net > 0 && !breakEvenMonth) breakEvenMonth = i;
-                if (i===1) { sRev = monthlyRev; sCOGS = totalCOGS; sOpEx = opEx; sInt = monthlyInterest + taxVal; sNet = net; }
+                if (i === 1) { sRev = monthlyRev; sCOGS = totalCOGS; sOpEx = opEx; sInt = monthlyInterest + taxVal; sNet = net; }
                 chartLabels.push(`${T.monthAbbr || 'M'}${i}`);
                 chartCash.push(cash);
                 breakEvenRevData.push(monthlyRev);
@@ -139,12 +139,12 @@ const ProfitPilot = ({ scenarios = [], onAddScenario, onDeleteScenario }) => {
             const roi = Invest > 0 ? (totalNet / Invest) * 100 : 0;
             const cac = Cust > 0 ? Marketing / Cust : 0;
             const arpu = Cust > 0 ? (totalRevenue / 12) / Cust : 0;
-            const ltv = arpu * (PM/100) * 12;
-            const ratio = cac > 0 ? ltv/cac : 0;
+            const ltv = arpu * (PM / 100) * 12;
+            const ratio = cac > 0 ? ltv / cac : 0;
             let burn = Math.abs(avgNet);
             let runway = avgNet < 0 ? (Invest / burn) : Infinity;
-            const effMargin = (PM/100)*(1-R/100);
-            const breakEven = effMargin > 0 ? (Fixed+Marketing+monthlyInterest)/effMargin : 0;
+            const effMargin = (PM / 100) * (1 - R / 100);
+            const breakEven = effMargin > 0 ? (Fixed + Marketing + monthlyInterest) / effMargin : 0;
 
             let tips = [];
             if (seasonality === 'volatile') tips.push(`🌊 <b>${T.pp_volatility_alert_title || 'Volatility Alert'}:</b> ${T.pp_volatility_alert_desc || 'High variance detected.'}`);
@@ -163,20 +163,20 @@ const ProfitPilot = ({ scenarios = [], onAddScenario, onDeleteScenario }) => {
 
             const calcSen = (dMod, mMod) => {
                 const newD = D * (1 + dMod); const newM = Math.min(100, PM * (1 + mMod));
-                let rev = Invest * (newD / 100); let cogs = rev * (1 - newM/100);
-                let riskVal = (rev - cogs) * (R/100); let opExVal = Fixed + Marketing + (Loan * (IntRate/100))/12;
+                let rev = Invest * (newD / 100); let cogs = rev * (1 - newM / 100);
+                let riskVal = (rev - cogs) * (R / 100); let opExVal = Fixed + Marketing + (Loan * (IntRate / 100)) / 12;
                 let preTaxVal = rev - cogs - riskVal - opExVal;
-                return preTaxVal - (preTaxVal > 0 ? preTaxVal * (TaxRate/100) : 0);
+                return preTaxVal - (preTaxVal > 0 ? preTaxVal * (TaxRate / 100) : 0);
             };
             const sensitivity = {
                 s00: calcSen(-0.1, -0.1), s01: calcSen(0, -0.1), s02: calcSen(0.1, -0.1),
-                s10: calcSen(-0.1, 0),    s11: calcSen(0, 0),    s12: calcSen(0.1, 0),
-                s20: calcSen(-0.1, 0.1),  s21: calcSen(0, 0.1),  s22: calcSen(0.1, 0.1)
+                s10: calcSen(-0.1, 0), s11: calcSen(0, 0), s12: calcSen(0.1, 0),
+                s20: calcSen(-0.1, 0.1), s21: calcSen(0, 0.1), s22: calcSen(0.1, 0.1)
             };
 
-            const scoreGrowth = Math.min(100, Math.max(0, G * 5)); 
-            const scoreProfit = Math.min(100, Math.max(0, roi * 2)); 
-            const scoreSafety = Math.min(100, Math.max(0, 100 - R)); 
+            const scoreGrowth = Math.min(100, Math.max(0, G * 5));
+            const scoreProfit = Math.min(100, Math.max(0, roi * 2));
+            const scoreSafety = Math.min(100, Math.max(0, 100 - R));
             const scoreEff = Math.min(100, Math.max(0, effMargin * 200));
 
             if (lowestCash < 0 && runway !== Infinity) setAlert({ show: true, msg: `${T.pp_alert_critical || 'CRITICAL ALERT: Cash runway only'} ${runway.toFixed(1)} ${T.pp_alert_months || 'months'}` });
@@ -186,13 +186,13 @@ const ProfitPilot = ({ scenarios = [], onAddScenario, onDeleteScenario }) => {
             setOutputs({
                 rowRev: sRev, rowCOGS: sCOGS, rowFixedMarketing: sOpEx, rowInterest: sInt, rowNet: sNet,
                 kpis: {
-                    m1_net: avgNet, m1_sub: totalRevenue > 0 ? ((totalNet/totalRevenue)*100).toFixed(1) + '%' : '0%',
+                    m1_net: avgNet, m1_sub: totalRevenue > 0 ? ((totalNet / totalRevenue) * 100).toFixed(1) + '%' : '0%',
                     m2_ebitda: totalEBITDA, m3_roi: roi.toFixed(1) + '%', m4_rev: totalRevenue, m5_margin: PM + '%',
-                    m6_cac: cac, m7_ltv: ltv, m8_ratio: ratio.toFixed(1) + 'x', m9_roas: (Marketing > 0 ? totalRevenue / (Marketing*12) : 0).toFixed(2) + 'x',
-                    m10_opex: (totalRevenue > 0 ? ((Fixed+Marketing)*12 / totalRevenue)*100 : 0).toFixed(1) + '%',
-                    m11_payback: avgNet > 0 ? ((Invest-Loan)/avgNet).toFixed(1) + ` ${T.pp_months || 'Mo'}` : (T.pp_never || 'Never'),
+                    m6_cac: cac, m7_ltv: ltv, m8_ratio: ratio.toFixed(1) + 'x', m9_roas: (Marketing > 0 ? totalRevenue / (Marketing * 12) : 0).toFixed(2) + 'x',
+                    m10_opex: (totalRevenue > 0 ? ((Fixed + Marketing) * 12 / totalRevenue) * 100 : 0).toFixed(1) + '%',
+                    m11_payback: avgNet > 0 ? ((Invest - Loan) / avgNet).toFixed(1) + ` ${T.pp_months || 'Mo'}` : (T.pp_never || 'Never'),
                     m12_runway: runway === Infinity ? '∞' : runway.toFixed(1) + ` ${T.pp_months || 'Mo'}`, m13_be: breakEven,
-                    m14_floor: lowestCash, m15_rpe: Empl > 0 ? totalRevenue/Empl : 0
+                    m14_floor: lowestCash, m15_rpe: Empl > 0 ? totalRevenue / Empl : 0
                 },
                 swot: { s, w, o, t }, aiInsights: tips, ledger: ledgerData, sensitivity: sensitivity,
                 charts: {
@@ -221,22 +221,24 @@ const ProfitPilot = ({ scenarios = [], onAddScenario, onDeleteScenario }) => {
 
         chartInstances.current.main = new ChartJS(mainChartRef.current, {
             type: 'line',
-            data: { 
-                labels: outputs.charts.labels, 
+            data: {
+                labels: outputs.charts.labels,
                 datasets: [
                     { label: T.pp_cash_flow_title || 'Cash Flow', data: outputs.charts.cashData, borderColor: '#0ea5e9', backgroundColor: 'rgba(14, 165, 233, 0.2)', fill: true, tension: 0.3, pointRadius: 2, pointBackgroundColor: '#fff' },
                     ...(snapshotData ? [{ label: T.pp_baseline || 'Baseline', data: snapshotData, borderColor: themeBaseline, borderDash: [5, 5], fill: false, pointRadius: 0 }] : [])
-                ] 
+                ]
             },
             options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false } }, y: { ticks: { callback: (v) => formatMoney(v) } } } }
         });
 
         chartInstances.current.breakEven = new ChartJS(breakEvenChartRef.current, {
             type: 'line',
-            data: { labels: outputs.charts.labels, datasets: [
-                { label: T.revenue || 'Revenue', data: outputs.charts.beRev, borderColor: '#10b981', fill: false, tension: 0.4 },
-                { label: T.expenses || 'Expenses', data: outputs.charts.beCost, borderColor: '#ef4444', borderDash: [4,4], fill: false, tension: 0.1 }
-            ]},
+            data: {
+                labels: outputs.charts.labels, datasets: [
+                    { label: T.revenue || 'Revenue', data: outputs.charts.beRev, borderColor: '#10b981', fill: false, tension: 0.4 },
+                    { label: T.expenses || 'Expenses', data: outputs.charts.beCost, borderColor: '#ef4444', borderDash: [4, 4], fill: false, tension: 0.1 }
+                ]
+            },
             options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false } }, y: { ticks: { callback: (v) => formatMoney(v) } } } }
         });
 
@@ -265,7 +267,7 @@ const ProfitPilot = ({ scenarios = [], onAddScenario, onDeleteScenario }) => {
     };
 
     const resetInputs = () => {
-        if(window.confirm(T.pp_confirm_reset || 'Reset all inputs?')) {
+        if (window.confirm(T.pp_confirm_reset || 'Reset all inputs?')) {
             setConfig({ preset: 'custom', investment: 50000, fixedCosts: 2000, marketing: 1000, margin: 25, demand: 70, growth: 5, risk: 10, loanAmount: 0, interestRate: 10, tax: 15, customers: 100, employees: 0, seasonality: 'none' });
             setSnapshotData(null);
             showToastMsg(T.pp_reset_complete || 'Reset complete');
@@ -274,10 +276,10 @@ const ProfitPilot = ({ scenarios = [], onAddScenario, onDeleteScenario }) => {
 
     const handleSaveScenario = () => {
         if (!scenarioName.trim()) { showToastMsg(T.pp_scenario_name_req || 'Scenario name required'); return; }
-        onAddScenario?.({ 
-            name: scenarioName, 
-            date: new Date().toLocaleDateString(), 
-            data: config 
+        onAddScenario?.({
+            name: scenarioName,
+            date: new Date().toLocaleDateString(),
+            data: config
         });
         setScenarioName('');
         showToastMsg(T.pp_scenario_saved || 'Scenario saved');
@@ -290,7 +292,7 @@ const ProfitPilot = ({ scenarios = [], onAddScenario, onDeleteScenario }) => {
             showToastMsg(`${T.pp_loaded || 'Loaded'}: ${s.name}`);
         }
     };
-    
+
     const takeSnapshot = () => {
         if (outputs.charts.cashData.length > 0) {
             setSnapshotData([...outputs.charts.cashData]);
@@ -315,10 +317,10 @@ const ProfitPilot = ({ scenarios = [], onAddScenario, onDeleteScenario }) => {
         { id: 'm14_floor', label: T.pp_kpi_cash_floor || 'Cash Floor', icon: ArrowDown, value: formatMoney(outputs.kpis.m14_floor), colorize: true, sub: T.pp_kpi_cash_floor_sub || 'Min Balance' },
         { id: 'm15_rpe', label: T.pp_kpi_rev_emp || 'Rev/Emp', icon: Users, value: formatMoney(outputs.kpis.m15_rpe), colorize: true, sub: T.pp_kpi_rev_emp_sub || 'Productivity' },
     ];
-      
+
     return (
         <div className={`space-y-8 animate-fade-in pb-12 max-w-[1600px] mx-auto p-4 md:p-6 lg:p-8 ${theme === 'dark' ? 'dark' : ''}`}>
-            
+
             {toast.show && (
                 <div className="fixed top-20 right-5 z-[100] transform transition-all duration-500 translate-x-0 opacity-100">
                     <div className="bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-6 py-4 rounded-xl shadow-2xl flex items-center gap-4 border-l-4 border-emerald-500">
@@ -331,17 +333,17 @@ const ProfitPilot = ({ scenarios = [], onAddScenario, onDeleteScenario }) => {
             {/* Page Header */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div>
-                <h2 className="text-3xl font-extrabold tracking-tight text-card-foreground">{T.profitPilot || 'Profit Pilot'}</h2>
-                <p className="text-muted-foreground mt-2 text-sm">{T.pp_subtitle || 'Strategic Command Center for Business Simulation'}</p>
+                    <h2 className="text-3xl font-extrabold tracking-tight text-card-foreground">{T.profitPilot || 'Profit Pilot'}</h2>
+                    <p className="text-muted-foreground mt-2 text-sm">{T.pp_subtitle || 'Strategic Command Center for Business Simulation'}</p>
                 </div>
                 <div className="flex items-center gap-3">
-                <button onClick={takeSnapshot} className={`flex items-center gap-2 bg-card text-foreground px-4 py-2 rounded-lg text-sm font-semibold transition-all border border-border shadow-sm active:scale-95 group ${snapshotData ? 'border-primary text-primary' : 'hover:bg-accent'}`}>
-                    <Camera size={16} className="group-hover:rotate-12 transition-transform" /> 
-                    <span>{snapshotData ? (T.pp_baseline_set || 'Baseline Set') : (T.pp_snapshot || 'Snapshot')}</span>
-                </button>
-                <button onClick={() => window.print()} className="bg-foreground text-background px-4 py-2 rounded-lg flex items-center gap-2 transition-colors shadow-sm font-semibold text-sm">
-                    <Printer size={16}/> {T.print || 'Print'}
-                </button>
+                    <button onClick={takeSnapshot} className={`flex items-center gap-2 bg-card text-foreground px-4 py-2 rounded-lg text-sm font-semibold transition-all border border-border shadow-sm active:scale-95 group ${snapshotData ? 'border-primary text-primary' : 'hover:bg-accent'}`}>
+                        <Camera size={16} className="group-hover:rotate-12 transition-transform" />
+                        <span>{snapshotData ? (T.pp_baseline_set || 'Baseline Set') : (T.pp_snapshot || 'Snapshot')}</span>
+                    </button>
+                    <button onClick={() => window.print()} className="bg-foreground text-background px-4 py-2 rounded-lg flex items-center gap-2 transition-colors shadow-sm font-semibold text-sm">
+                        <Printer size={16} /> {T.print || 'Print'}
+                    </button>
                 </div>
             </div>
 
@@ -350,7 +352,7 @@ const ProfitPilot = ({ scenarios = [], onAddScenario, onDeleteScenario }) => {
                     <AlertTriangle className="animate-pulse" /> <span className="text-xs font-bold uppercase tracking-wide">{alert.msg}</span>
                 </div>
             )}
-            
+
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
                 {/* LEFT CONTROL DECK */}
                 <div className="lg:col-span-3 space-y-6 no-print order-2 lg:order-1">
@@ -391,7 +393,7 @@ const ProfitPilot = ({ scenarios = [], onAddScenario, onDeleteScenario }) => {
                                 <div><label className="text-[10px] font-bold text-muted-foreground uppercase mb-1.5 block">{T.pp_ads_costs || 'Ads Costs'}</label><input type="number" name="marketing" value={config.marketing} onChange={handleInputChange} className="w-full px-3 py-2.5 rounded-xl border border-border bg-background text-sm font-mono font-bold focus:ring-2 focus:ring-primary-500 outline-none transition-all" /></div>
                             </div>
                             <div className="space-y-7 pt-2">
-                                 <div>
+                                <div>
                                     <div className="flex justify-between items-end mb-2"><label className="text-sm font-bold text-foreground">{T.pp_gross_margin || 'Gross Margin'}</label><span className="text-xs font-bold text-emerald-600 bg-emerald-100 dark:bg-emerald-900/30 px-2 py-1 rounded-md border border-emerald-200 dark:border-emerald-800">{config.margin}%</span></div>
                                     <input type="range" name="margin" min="0" max="100" value={config.margin} onChange={handleInputChange} className="slider-emerald" />
                                 </div>
@@ -403,7 +405,7 @@ const ProfitPilot = ({ scenarios = [], onAddScenario, onDeleteScenario }) => {
                                     <div className="flex justify-between items-end mb-2"><label className="text-sm font-bold text-foreground">{T.pp_monthly_growth || 'Monthly Growth'}</label><span className="text-xs font-bold text-purple-600 bg-purple-100 dark:bg-purple-900/30 px-2 py-1 rounded-md border border-purple-200 dark:border-purple-800">{config.growth}%</span></div>
                                     <input type="range" name="growth" min="0" max="20" step="0.5" value={config.growth} onChange={handleInputChange} className="slider-purple" />
                                 </div>
-                                 <div>
+                                <div>
                                     <div className="flex justify-between items-end mb-2"><label className="text-sm font-bold text-foreground">{T.pp_risk_factor || 'Risk Factor'}</label><span className="text-xs font-bold text-red-500 bg-red-100 dark:bg-red-900/30 px-2 py-1 rounded-md border border-red-200 dark:border-red-800">{config.risk}%</span></div>
                                     <input type="range" name="risk" min="0" max="100" value={config.risk} onChange={handleInputChange} className="slider-red" />
                                 </div>
@@ -428,13 +430,13 @@ const ProfitPilot = ({ scenarios = [], onAddScenario, onDeleteScenario }) => {
                         </div>
                     </div>
                 </div>
-                
+
                 {/* MAIN DASHBOARD */}
                 <div className="lg:col-span-9 space-y-6 lg:space-y-8 order-1 lg:order-2">
                     <div className="glass-card rounded-2xl p-6 lg:p-8">
                         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                             <div className="lg:col-span-8 flex flex-col h-full border-b lg:border-b-0 lg:border-r border-border lg:pr-8 pb-6 lg:pb-0">
-                               <div className="flex justify-between items-center mb-6">
+                                <div className="flex justify-between items-center mb-6">
                                     <div><h4 className="text-sm font-bold text-foreground flex items-center gap-2"><div className="w-2 h-6 bg-emerald-500 rounded-full"></div> {T.pp_cash_flow_title || 'Cash Flow Projection'}</h4><p className="text-[10px] text-muted-foreground mt-1 pl-3 font-medium">{T.pp_cash_flow_subtitle || '12 Months'}</p></div>
                                     <div className="flex gap-4">
                                         <div className="flex items-center gap-2"><div className="w-2.5 h-2.5 rounded-full bg-emerald-500"></div><span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wide">{T.pp_current || 'Current'}</span></div>
@@ -444,21 +446,21 @@ const ProfitPilot = ({ scenarios = [], onAddScenario, onDeleteScenario }) => {
                                 <div className="chart-wrapper flex-grow"><canvas ref={mainChartRef}></canvas></div>
                             </div>
                             <div className="lg:col-span-4 flex flex-col justify-between h-full pl-2">
-                               <div className="bg-muted rounded-xl p-5 border border-border">
-                                  <h4 className="text-[10px] font-extrabold text-muted-foreground uppercase mb-4 tracking-widest flex items-center gap-2"><Calendar size={14} /> {T.pp_month_1_snapshot || 'M1 Snapshot'}</h4>
-                                  <div className="space-y-3 text-sm">
-                                      <div className="flex justify-between items-center"><span className="text-muted-foreground text-xs font-semibold">{T.revenue || 'Revenue'}</span><span className="font-bold text-foreground font-mono">{formatMoney(outputs.rowRev)}</span></div>
-                                      <div className="flex justify-between items-center"><span className="text-muted-foreground text-xs font-semibold">{T.pp_cogs_risk || 'COGS'}</span><span className="font-semibold text-red-400 font-mono text-xs">-{formatMoney(outputs.rowCOGS)}</span></div>
-                                      <div className="flex justify-between items-center"><span className="text-muted-foreground text-xs font-semibold">{T.pp_opex || 'OpEx'}</span><span className="font-semibold text-orange-400 font-mono text-xs">-{formatMoney(outputs.rowFixedMarketing)}</span></div>
-                                      <div className="flex justify-between items-center"><span className="text-muted-foreground text-xs font-semibold">{T.pp_debt_service || 'Debt Service'}</span><span className="font-semibold text-slate-400 font-mono text-xs">-{formatMoney(outputs.rowInterest)}</span></div>
-                                      <div className="h-px bg-border my-2"></div>
-                                      <div className="flex justify-between items-center"><span className="font-bold text-foreground text-sm">{T.netProfit || 'Net Profit'}</span><span className={`font-bold font-mono text-xl tracking-tight ${outputs.rowNet >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>{formatMoney(outputs.rowNet)}</span></div>
-                                  </div>
-                               </div>
-                               <div className="mt-6 flex-grow flex flex-col justify-end">
+                                <div className="bg-muted rounded-xl p-5 border border-border">
+                                    <h4 className="text-[10px] font-extrabold text-muted-foreground uppercase mb-4 tracking-widest flex items-center gap-2"><Calendar size={14} /> {T.pp_month_1_snapshot || 'M1 Snapshot'}</h4>
+                                    <div className="space-y-3 text-sm">
+                                        <div className="flex justify-between items-center"><span className="text-muted-foreground text-xs font-semibold">{T.revenue || 'Revenue'}</span><span className="font-bold text-foreground font-mono">{formatMoney(outputs.rowRev)}</span></div>
+                                        <div className="flex justify-between items-center"><span className="text-muted-foreground text-xs font-semibold">{T.pp_cogs_risk || 'COGS'}</span><span className="font-semibold text-red-400 font-mono text-xs">-{formatMoney(outputs.rowCOGS)}</span></div>
+                                        <div className="flex justify-between items-center"><span className="text-muted-foreground text-xs font-semibold">{T.pp_opex || 'OpEx'}</span><span className="font-semibold text-orange-400 font-mono text-xs">-{formatMoney(outputs.rowFixedMarketing)}</span></div>
+                                        <div className="flex justify-between items-center"><span className="text-muted-foreground text-xs font-semibold">{T.pp_debt_service || 'Debt Service'}</span><span className="font-semibold text-slate-400 font-mono text-xs">-{formatMoney(outputs.rowInterest)}</span></div>
+                                        <div className="h-px bg-border my-2"></div>
+                                        <div className="flex justify-between items-center"><span className="font-bold text-foreground text-sm">{T.netProfit || 'Net Profit'}</span><span className={`font-bold font-mono text-xl tracking-tight ${outputs.rowNet >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>{formatMoney(outputs.rowNet)}</span></div>
+                                    </div>
+                                </div>
+                                <div className="mt-6 flex-grow flex flex-col justify-end">
                                     <h4 className="text-[10px] font-bold text-muted-foreground uppercase mb-3 tracking-widest text-center">{T.pp_cost_distribution || 'Cost Distribution'}</h4>
                                     <div className="h-[140px] w-full relative"><canvas ref={distChartRef}></canvas></div>
-                               </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -470,7 +472,7 @@ const ProfitPilot = ({ scenarios = [], onAddScenario, onDeleteScenario }) => {
                             <div>
                                 <h4 className="text-sm font-bold text-foreground mb-1.5 flex items-center gap-2">{T.pp_ai_analyst || 'AI Analyst'} <span className="text-[9px] bg-primary/10 text-primary px-1.5 py-0.5 rounded font-bold uppercase">{T.pp_beta || 'Beta'}</span></h4>
                                 <div className="text-xs text-muted-foreground leading-relaxed space-y-1.5">
-                                    {outputs.aiInsights.map((tip, i) => <div key={i} className='flex gap-2 items-start'><span className='mt-1 text-primary'>•</span><span dangerouslySetInnerHTML={{__html: tip}}></span></div>)}
+                                    {outputs.aiInsights.map((tip, i) => <div key={i} className='flex gap-2 items-start'><span className='mt-1 text-primary'>•</span><span dangerouslySetInnerHTML={{ __html: tip }}></span></div>)}
                                 </div>
                             </div>
                         </div>
@@ -491,7 +493,7 @@ const ProfitPilot = ({ scenarios = [], onAddScenario, onDeleteScenario }) => {
                                 <div className="bg-muted p-2 rounded-lg flex items-center justify-center font-bold text-muted-foreground">{T.pp_sens_margin_neg || '-10% Mgn'}</div>
                                 {['s00', 's01', 's02'].map(k => <div key={k} className={`matrix-cell p-2 flex items-center justify-center rounded-lg border border-border font-bold ${outputs.sensitivity[k] >= 0 ? 'text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20' : 'text-red-500 bg-red-50 dark:bg-red-900/20'}`}>{formatMoney(outputs.sensitivity[k] || 0)}</div>)}
                                 <div className="bg-slate-100 dark:bg-slate-700 p-2 rounded-lg flex items-center justify-center font-bold text-primary">{T.pp_sens_base || 'Base'}</div>
-                                {['s10', 's11', 's12'].map(k => <div key={k} className={`matrix-cell p-2 flex items-center justify-center rounded-lg border ${k==='s11' ? 'bg-primary/10 border-primary/20 font-bold shadow-inner' : 'border-border font-bold ' + (outputs.sensitivity[k] >= 0 ? 'text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20' : 'text-red-500 bg-red-50 dark:bg-red-900/20')}`}>{formatMoney(outputs.sensitivity[k] || 0)}</div>)}
+                                {['s10', 's11', 's12'].map(k => <div key={k} className={`matrix-cell p-2 flex items-center justify-center rounded-lg border ${k === 's11' ? 'bg-primary/10 border-primary/20 font-bold shadow-inner' : 'border-border font-bold ' + (outputs.sensitivity[k] >= 0 ? 'text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20' : 'text-red-500 bg-red-50 dark:bg-red-900/20')}`}>{formatMoney(outputs.sensitivity[k] || 0)}</div>)}
                                 <div className="bg-muted p-2 rounded-lg flex items-center justify-center font-bold text-muted-foreground">{T.pp_sens_margin_pos || '+10% Mgn'}</div>
                                 {['s20', 's21', 's22'].map(k => <div key={k} className={`matrix-cell p-2 flex items-center justify-center rounded-lg border border-border font-bold ${outputs.sensitivity[k] >= 0 ? 'text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20' : 'text-red-500 bg-red-50 dark:bg-red-900/20'}`}>{formatMoney(outputs.sensitivity[k] || 0)}</div>)}
                             </div>
@@ -505,18 +507,18 @@ const ProfitPilot = ({ scenarios = [], onAddScenario, onDeleteScenario }) => {
                                 <div className="absolute inset-0 overflow-auto custom-scrollbar">
                                     <table className="w-full text-left">
                                         <thead className="sticky top-0 bg-background z-10 shadow-sm"><tr className="border-b border-border"><th className="px-4 py-3 text-[9px] font-bold text-muted-foreground uppercase">{T.pp_month || 'Mo'}</th><th className="px-4 py-3 text-[9px] font-bold text-muted-foreground uppercase text-right">{T.revenue || 'Rev'}</th><th className="px-4 py-3 text-[9px] font-bold text-muted-foreground uppercase text-right">{T.expenses || 'Exp'}</th><th className="px-4 py-3 text-[9px] font-bold text-muted-foreground uppercase text-right">{T.netProfit || 'Net'}</th><th className="px-4 py-3 text-[9px] font-bold text-muted-foreground uppercase text-right">{T.pp_cash || 'Cash'}</th></tr></thead>
-                                        <tbody className="text-[10px] font-mono text-foreground">{outputs.ledger.map((row, i) => <tr key={i} className="border-b border-border hover:bg-muted/50 transition-colors"><td className="px-4 py-3 font-bold text-muted-foreground">{row.month}</td><td className="px-4 py-3 text-right">{formatMoney(row.rev)}</td><td className="px-4 py-3 text-right text-muted-foreground">-{formatMoney(row.exp)}</td><td className={`px-4 py-3 text-right font-bold ${row.net>=0 ? 'text-emerald-500' : 'text-red-500'}`}>{formatMoney(row.net)}</td><td className={`px-4 py-3 text-right font-bold ${row.cash>=0 ? 'text-foreground' : 'text-red-500'}`}>{formatMoney(row.cash)}</td></tr>)}</tbody>
+                                        <tbody className="text-[10px] font-mono text-foreground">{outputs.ledger.map((row, i) => <tr key={i} className="border-b border-border hover:bg-muted/50 transition-colors"><td className="px-4 py-3 font-bold text-muted-foreground">{row.month}</td><td className="px-4 py-3 text-right">{formatMoney(row.rev)}</td><td className="px-4 py-3 text-right text-muted-foreground">-{formatMoney(row.exp)}</td><td className={`px-4 py-3 text-right font-bold ${row.net >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>{formatMoney(row.net)}</td><td className={`px-4 py-3 text-right font-bold ${row.cash >= 0 ? 'text-foreground' : 'text-red-500'}`}>{formatMoney(row.cash)}</td></tr>)}</tbody>
                                     </table>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    
+
                     <div className="glass-card rounded-2xl p-6 lg:p-8">
                         <h4 className="text-sm font-bold text-foreground flex items-center gap-2 mb-6"><Scale size={14} className="text-purple-500" /> {T.pp_op_trends || 'Trends'}</h4>
                         <div className="chart-wrapper h-[250px]"><canvas ref={breakEvenChartRef}></canvas></div>
                     </div>
-                    
+
                     <div className="space-y-4">
                         <div className="flex items-center gap-3 mb-2 px-1"><div className="w-8 h-8 rounded-lg bg-slate-900 dark:bg-white text-white dark:text-slate-900 flex items-center justify-center shadow-lg"><Gauge size={14} /></div><div><h3 className="text-sm font-bold text-foreground leading-none">{T.pp_mission_control || 'Mission Control'}</h3><span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{T.pp_kpis || 'KPIs'}</span></div></div>
                         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
@@ -529,7 +531,7 @@ const ProfitPilot = ({ scenarios = [], onAddScenario, onDeleteScenario }) => {
                             ))}
                         </div>
                     </div>
-                    
+
                     <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mt-6">
                         <div className="glass-card rounded-2xl p-6">
                             <h4 className="text-sm font-bold text-foreground flex items-center gap-2 mb-4"><Layers size={14} className="text-primary" /> {T.pp_scenario_planner || 'Planner'}</h4>
@@ -549,10 +551,10 @@ const ProfitPilot = ({ scenarios = [], onAddScenario, onDeleteScenario }) => {
                         <div className="glass-card rounded-2xl p-6">
                             <h4 className="text-sm font-bold text-foreground flex items-center gap-2 mb-4"><Crosshair size={14} className="text-primary" /> {T.pp_swot_analysis || 'SWOT Analysis'}</h4>
                             <div className="grid grid-cols-2 gap-3 h-[180px]">
-                                <div className="swot-box bg-emerald-50/50 dark:bg-emerald-900/10 border-emerald-100 dark:border-emerald-800/30"><h5 className="text-[10px] font-extrabold text-emerald-600 uppercase mb-2">{T.pp_strengths || 'Strengths'}</h5><div className="text-[10px] text-muted-foreground space-y-1">{outputs.swot.s.map((t,i) => <div key={i}>• {t}</div>)}</div></div>
-                                <div className="swot-box bg-orange-50/50 dark:bg-orange-900/10 border-orange-100 dark:border-orange-800/30"><h5 className="text-[10px] font-extrabold text-orange-600 uppercase mb-2">{T.pp_weaknesses || 'Weaknesses'}</h5><div className="text-[10px] text-muted-foreground space-y-1">{outputs.swot.w.map((t,i) => <div key={i}>• {t}</div>)}</div></div>
-                                <div className="swot-box bg-blue-50/50 dark:bg-blue-900/10 border-blue-100 dark:border-blue-800/30"><h5 className="text-[10px] font-extrabold text-blue-600 uppercase mb-2">{T.pp_opportunities || 'Opportunities'}</h5><div className="text-[10px] text-muted-foreground space-y-1">{outputs.swot.o.map((t,i) => <div key={i}>• {t}</div>)}</div></div>
-                                <div className="swot-box bg-red-50/50 dark:bg-red-900/10 border-red-100 dark:border-red-800/30"><h5 className="text-[10px] font-extrabold text-red-600 uppercase mb-2">{T.pp_threats || 'Threats'}</h5><div className="text-[10px] text-muted-foreground space-y-1">{outputs.swot.t.map((t,i) => <div key={i}>• {t}</div>)}</div></div>
+                                <div className="swot-box bg-emerald-50/50 dark:bg-emerald-900/10 border-emerald-100 dark:border-emerald-800/30"><h5 className="text-[10px] font-extrabold text-emerald-600 uppercase mb-2">{T.pp_strengths || 'Strengths'}</h5><div className="text-[10px] text-muted-foreground space-y-1">{outputs.swot.s.map((t, i) => <div key={i}>• {t}</div>)}</div></div>
+                                <div className="swot-box bg-orange-50/50 dark:bg-orange-900/10 border-orange-100 dark:border-orange-800/30"><h5 className="text-[10px] font-extrabold text-orange-600 uppercase mb-2">{T.pp_weaknesses || 'Weaknesses'}</h5><div className="text-[10px] text-muted-foreground space-y-1">{outputs.swot.w.map((t, i) => <div key={i}>• {t}</div>)}</div></div>
+                                <div className="swot-box bg-blue-50/50 dark:bg-blue-900/10 border-blue-100 dark:border-blue-800/30"><h5 className="text-[10px] font-extrabold text-blue-600 uppercase mb-2">{T.pp_opportunities || 'Opportunities'}</h5><div className="text-[10px] text-muted-foreground space-y-1">{outputs.swot.o.map((t, i) => <div key={i}>• {t}</div>)}</div></div>
+                                <div className="swot-box bg-red-50/50 dark:bg-red-900/10 border-red-100 dark:border-red-800/30"><h5 className="text-[10px] font-extrabold text-red-600 uppercase mb-2">{T.pp_threats || 'Threats'}</h5><div className="text-[10px] text-muted-foreground space-y-1">{outputs.swot.t.map((t, i) => <div key={i}>• {t}</div>)}</div></div>
                             </div>
                         </div>
                     </div>
