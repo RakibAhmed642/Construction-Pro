@@ -42,7 +42,7 @@ jobs:
 
       # 5️⃣ Export static HTML for GitHub Pages
       - name: Export Next.js static site
-        run: npx next export
+        run: npm run build
 
       # 6️⃣ Upload artifact for Pages
       - name: Upload artifact for GitHub Pages
