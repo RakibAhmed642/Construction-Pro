@@ -403,110 +403,176 @@ const EmployeeDetails = ({ employee, projects = [], T = {} }) => {
 // --- Enhanced Chart Component ---
 const FinancialTrendChart = ({ transactions = [], T = {} }) => {
     const [hoveredIndex, setHoveredIndex] = useState(null);
+    const [viewMode, setViewMode] = useState('30d'); // '30d' or '12m'
 
     const trendData = useMemo(() => {
-        const data = Array.from({ length: 30 }, (_, i) => {
-            const date = new Date();
-            date.setDate(date.getDate() - i);
-            const dateString = date.toISOString().split('T')[0];
-            return {
-                date: dateString,
-                income: 0,
-                expense: 0,
-            };
-        }).reverse();
+        if (viewMode === '30d') {
+            const data = Array.from({ length: 30 }, (_, i) => {
+                const date = new Date();
+                date.setDate(date.getDate() - i);
+                const dateString = date.toISOString().split('T')[0];
+                return {
+                    date: dateString,
+                    label: date.getDate(),
+                    fullLabel: date.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' }),
+                    income: 0,
+                    expense: 0,
+                };
+            }).reverse();
 
-        transactions.forEach(t => {
-            const tDate = t.date;
-            const entry = data.find(d => d.date === tDate);
-            if (entry) {
-                if (t.type === 'income') entry.income += Number(t.amount || 0);
-                if (t.type === 'expense') entry.expense += Number(t.amount || 0);
-            }
-        });
+            transactions.forEach(t => {
+                const entry = data.find(d => d.date === t.date);
+                if (entry) {
+                    if (t.type === 'income') entry.income += Number(t.amount || 0);
+                    if (t.type === 'expense') entry.expense += Number(t.amount || 0);
+                }
+            });
+            return data;
+        } else {
+            const data = Array.from({ length: 12 }, (_, i) => {
+                const date = new Date();
+                date.setMonth(date.getMonth() - i);
+                return {
+                    monthKey: `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`,
+                    label: date.toLocaleDateString(undefined, { month: 'short' }),
+                    fullLabel: date.toLocaleDateString(undefined, { month: 'long', year: 'numeric' }),
+                    income: 0,
+                    expense: 0,
+                };
+            }).reverse();
 
-        const max = Math.max(1, ...data.map(d => Math.max(d.income, d.expense)));
+            transactions.forEach(t => {
+                const tMonth = t.date?.substring(0, 7);
+                const entry = data.find(d => d.monthKey === tMonth);
+                if (entry) {
+                    if (t.type === 'income') entry.income += Number(t.amount || 0);
+                    if (t.type === 'expense') entry.expense += Number(t.amount || 0);
+                }
+            });
+            return data;
+        }
+    }, [transactions, viewMode]);
 
-        return data.map(d => ({
+    const chartData = useMemo(() => {
+        const max = Math.max(1, ...trendData.map(d => Math.max(d.income, d.expense)));
+        return trendData.map(d => ({
             ...d,
-            label: new Date(d.date).getDate(),
             incomeHeight: (d.income / max) * 100,
             expenseHeight: (d.expense / max) * 100,
         }));
-
-    }, [transactions]);
+    }, [trendData]);
 
     return (
-        <div className="bg-card p-8 rounded-2xl border border-border/50 shadow-sm hover:shadow-md transition-shadow duration-300">
-            <div className="flex justify-between items-center mb-8">
+        <div className="bg-card p-6 sm:p-8 rounded-3xl border border-border/40 shadow-sm hover:shadow-md transition-shadow duration-500 relative overflow-hidden group">
+            <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/3 pointer-events-none transition-opacity duration-1000 group-hover:bg-primary/10"></div>
+
+            <div className="relative flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 mb-10 z-10">
                 <div>
-                    <h3 className="font-bold text-lg text-card-foreground flex items-center gap-2">
+                    <h3 className="font-bold text-xl text-card-foreground flex items-center gap-2 mb-1 tracking-tight">
                         {T.financialTrends || 'Financial Trends'}
                     </h3>
-                    <p className="text-sm text-muted-foreground mt-1">Last 30 days performance</p>
+                    <p className="text-sm text-muted-foreground font-medium flex items-center gap-2">
+                        <TrendingUp size={14} className="text-primary" />
+                        Cash Flow Analysis
+                    </p>
                 </div>
-                <div className="flex gap-4 text-xs font-medium">
-                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">
-                        <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-                        {T.income || 'Income'}
+
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 w-full sm:w-auto">
+                    {/* Toggle */}
+                    <div className="bg-muted/50 p-1 rounded-xl flex items-center border border-border/50 shadow-inner w-full sm:w-auto">
+                        <button
+                            onClick={() => setViewMode('30d')}
+                            className={`flex-1 sm:flex-none px-4 py-1.5 rounded-lg text-xs font-bold transition-all duration-300 ${viewMode === '30d' ? 'bg-card text-foreground shadow-sm ring-1 ring-border/50' : 'text-muted-foreground hover:text-foreground hover:bg-muted'}`}
+                        >
+                            {T.last30Days || '30 Days'}
+                        </button>
+                        <button
+                            onClick={() => setViewMode('12m')}
+                            className={`flex-1 sm:flex-none px-4 py-1.5 rounded-lg text-xs font-bold transition-all duration-300 ${viewMode === '12m' ? 'bg-card text-foreground shadow-sm ring-1 ring-border/50' : 'text-muted-foreground hover:text-foreground hover:bg-muted'}`}
+                        >
+                            {T.last12Months || '12 Months'}
+                        </button>
                     </div>
-                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-rose-500/10 text-rose-600 border border-rose-500/20">
-                        <div className="w-2 h-2 rounded-full bg-rose-500"></div>
-                        {T.expense || 'Expense'}
+
+                    {/* Legend */}
+                    <div className="flex gap-4 text-xs font-bold bg-muted/20 px-4 py-2 rounded-xl border border-border/30 backdrop-blur-sm">
+                        <div className="flex items-center gap-2 text-teal-600 dark:text-teal-400">
+                            <div className="w-2.5 h-2.5 rounded-sm bg-teal-500 shadow-[0_0_8px_rgba(20,184,166,0.4)]"></div>
+                            {T.income || 'Income'}
+                        </div>
+                        <div className="flex items-center gap-2 text-coral-600 dark:text-orange-400">
+                            <div className="w-2.5 h-2.5 rounded-sm bg-orange-500 opacity-80"></div>
+                            {T.expense || 'Expense'}
+                        </div>
                     </div>
                 </div>
             </div>
 
             <div
-                className="relative flex h-64 items-end gap-1 sm:gap-2 border-b border-border/60 pb-1"
+                className={`relative flex h-64 items-end border-b border-border/40 pb-1 z-10 ${viewMode === '30d' ? 'gap-1 sm:gap-[6px]' : 'gap-3 sm:gap-8'} px-1`}
                 onMouseLeave={() => setHoveredIndex(null)}
             >
+                {/* Horizontal Grid Lines */}
                 <div className="absolute inset-0 flex flex-col justify-between -z-10 pointer-events-none pb-1">
                     {[...Array(5)].map((_, i) => (
-                        <div key={i} className="w-full border-b border-dashed border-border/30 h-0"></div>
+                        <div key={i} className="w-full border-b border-dashed border-border/20 h-0 mix-blend-overlay"></div>
                     ))}
                 </div>
 
-                {trendData.map((d, i) => (
+                {chartData.map((d, i) => (
                     <div
                         key={i}
-                        className={`flex-1 h-full flex flex-col justify-end items-center group relative transition-all duration-300 ${hoveredIndex !== null && hoveredIndex !== i ? 'opacity-30 scale-95' : 'opacity-100 scale-100'}`}
+                        className={`flex-1 h-full flex flex-col justify-end items-center group relative transition-all duration-300 ease-out ${hoveredIndex !== null && hoveredIndex !== i ? 'opacity-40 grayscale-[30%]' : 'opacity-100 scale-100'}`}
                         onMouseEnter={() => setHoveredIndex(i)}
                     >
-                        <div className={`absolute bottom-full mb-3 left-1/2 -translate-x-1/2 w-max min-w-[140px] bg-slate-900/95 backdrop-blur text-white p-3 rounded-xl shadow-xl z-20 pointer-events-none transition-all duration-200 transform origin-bottom ${hoveredIndex === i ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-2 scale-90'}`}>
-                            <p className="text-xs font-medium text-slate-400 mb-2 border-b border-slate-700 pb-1">
-                                {new Date(d.date).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })}
+                        {/* Tooltip */}
+                        <div className={`absolute bottom-full mb-3 left-1/2 -translate-x-1/2 w-max min-w-[150px] bg-slate-900/95 backdrop-blur text-white p-3.5 rounded-2xl shadow-2xl z-20 pointer-events-none transition-all duration-300 transform origin-bottom border border-slate-700/50 ${hoveredIndex === i ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-3 scale-90'}`}>
+                            <p className="text-[11px] font-bold text-slate-400 mb-2.5 border-b border-slate-700/80 pb-1.5 uppercase tracking-wider">
+                                {d.fullLabel}
                             </p>
-                            <div className="space-y-1">
-                                <div className="flex justify-between items-center gap-3 text-xs">
-                                    <span className="text-emerald-400">In:</span>
-                                    <span className="font-mono font-bold">৳{d.income.toLocaleString()}</span>
+                            <div className="space-y-1.5 font-mono text-sm">
+                                <div className="flex justify-between items-center gap-4">
+                                    <span className="text-teal-400 font-medium text-xs">In</span>
+                                    <span className="font-bold tracking-tight">৳{d.income.toLocaleString()}</span>
                                 </div>
-                                <div className="flex justify-between items-center gap-3 text-xs">
-                                    <span className="text-rose-400">Out:</span>
-                                    <span className="font-mono font-bold">৳{d.expense.toLocaleString()}</span>
+                                <div className="flex justify-between items-center gap-4">
+                                    <span className="text-orange-400 font-medium text-xs">Out</span>
+                                    <span className="font-bold tracking-tight">৳{d.expense.toLocaleString()}</span>
                                 </div>
                             </div>
-                            <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-slate-900/95"></div>
+                            <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-[1px] border-[5px] border-transparent border-t-slate-900/95"></div>
                         </div>
 
-                        <div className="w-full h-full flex items-end justify-center gap-[4px] px-[1px]">
+                        {/* Bars Container */}
+                        <div className="w-full h-full flex items-end justify-center gap-[2px]">
                             <div
-                                className="w-full bg-gradient-to-t from-emerald-500/80 to-emerald-400 rounded-t-[4px] shadow-[0_0_10px_rgba(16,185,129,0.2)] transition-all duration-500 ease-out hover:brightness-110"
-                                style={{ height: `${Math.max(d.incomeHeight, 2)}%` }}
+                                className="w-full bg-gradient-to-t from-teal-500/80 to-teal-400 rounded-t-sm transition-all duration-700 ease-out hover:brightness-110 shadow-sm"
+                                style={{ height: `${Math.max(d.incomeHeight, 2)}%`, opacity: d.incomeHeight === 0 ? 0.3 : 1 }}
                             ></div>
                             <div
-                                className="w-full bg-gradient-to-t from-rose-500/80 to-rose-400 rounded-t-[4px] shadow-[0_0_10px_rgba(244,63,94,0.2)] transition-all duration-500 ease-out hover:brightness-110"
-                                style={{ height: `${Math.max(d.expenseHeight, 2)}%` }}
+                                className="w-full bg-gradient-to-t from-orange-500/80 to-coral-400 rounded-t-sm transition-all duration-700 ease-out opacity-80 hover:opacity-100"
+                                style={{ height: `${Math.max(d.expenseHeight, 2)}%`, opacity: d.expenseHeight === 0 ? 0.2 : 0.8 }}
                             ></div>
                         </div>
                     </div>
                 ))}
             </div>
-            <div className="flex justify-between mt-2 px-2">
-                <span className="text-xs text-muted-foreground">{new Date(trendData[0].date).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })}</span>
-                <span className="text-xs text-muted-foreground">{new Date(trendData[Math.floor(trendData.length / 2)].date).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })}</span>
-                <span className="text-xs text-muted-foreground">{T.today || 'Today'}</span>
+
+            {/* X-Axis Labels */}
+            <div className={`flex justify-between mt-3 px-2 text-[10px] font-semibold tracking-wider uppercase text-muted-foreground z-10 relative ${viewMode === '30d' ? 'hidden sm:flex' : 'flex'}`}>
+                {viewMode === '30d' ? (
+                    <>
+                        <span>{chartData[0]?.fullLabel.split(',')[0]}</span>
+                        <span>{chartData[Math.floor(chartData.length / 2)]?.fullLabel.split(',')[0]}</span>
+                        <span>{T.today || 'Today'}</span>
+                    </>
+                ) : (
+                    chartData.map((d, i) => (
+                        <span key={i} className={`flex-1 text-center ${i % 2 !== 0 && chartData.length > 6 ? 'hidden sm:block' : ''}`}>
+                            {d.label}
+                        </span>
+                    ))
+                )}
             </div>
         </div>
     );
@@ -602,13 +668,19 @@ const Dashboard = ({
             total: projects.length
         };
 
+        const materialsExpense = transactions.filter(t => t.type === 'expense' && (t.category?.toLowerCase().includes('material') || t.category === 'materials')).reduce((acc, t) => acc + Number(t.amount || 0), 0);
+        const laborExpense = transactions.filter(t => t.type === 'expense' && (t.category?.toLowerCase().includes('labor') || t.category === 'labor')).reduce((acc, t) => acc + Number(t.amount || 0), 0);
+
+        // Capture all remaining expenses as overhead to guarantee the visual breakdown equals exactly 100% of the total recorded expenses.
+        const overheadExpense = expense - (materialsExpense + laborExpense);
+
         const categoryExpense = {
-            materials: transactions.filter(t => t.category === 'materials').reduce((acc, t) => acc + Number(t.amount || 0), 0),
-            labor: transactions.filter(t => t.category === 'labor').reduce((acc, t) => acc + Number(t.amount || 0), 0),
-            overhead: transactions.filter(t => t.category === 'overhead').reduce((acc, t) => acc + Number(t.amount || 0), 0)
+            materials: materialsExpense,
+            labor: laborExpense,
+            overhead: Math.max(0, overheadExpense)
         };
 
-        const totalExpenseValue = categoryExpense.materials + categoryExpense.labor + categoryExpense.overhead || 1;
+        const totalExpenseValue = expense || 1;
 
         const projectBudgetVsExpense = projects
             .filter(p => Number(p.budget || 0) > 0)
