@@ -829,12 +829,13 @@ const Dashboard = ({
                         <div className="grid grid-cols-2 gap-x-4 gap-y-5">
                             <div className="space-y-1.5">
                                 <div className="text-slate-400 text-xs flex items-center gap-1.5 font-medium">
-                                    <ShieldCheck size={14} className="text-emerald-400" />
-                                    {T.safetyRecord || 'Safety Record'}
+                                    <Activity size={14} className="text-emerald-400" />
+                                    {T.workforceDeployed || 'Workforce Deployed'}
                                 </div>
                                 <div className="flex items-baseline gap-1">
-                                    <span className="text-2xl font-bold text-white tracking-tight">124</span>
-                                    <span className="text-[9px] text-slate-500 uppercase font-bold tracking-wider">Days</span>
+                                    <span className="text-2xl font-bold text-white tracking-tight">{Math.round(stats.utilizationRate)}</span>
+                                    <span className="text-xs text-emerald-400 font-bold tracking-tight">%</span>
+                                    <span className="text-[9px] text-slate-500 uppercase font-bold tracking-wider ml-1">{T.utilized || 'Utilized'}</span>
                                 </div>
                             </div>
 
