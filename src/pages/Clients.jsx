@@ -5,8 +5,10 @@ import { Plus, Edit, Trash2, Phone, Building, ChevronLeft, Search, HardHat, Doll
 import { Modal } from '@/components/UI';
 import { ClientForm } from '@/components/Forms';
 import { SettingsContext } from '@/context/SettingsContext';
+import { ProjectPopupDetails } from '@/pages/Dashboard';
 
-const ClientDetailView = ({ client, projects = [], transactions = [], onBack }) => {
+const ClientDetailView = ({ client, projects = [], transactions = [], employees = [], equipment = [], attendance = [], onNavigate, onBack }) => {
+    const [selectedProjectForPopup, setSelectedProjectForPopup] = useState(null);
     // --- Safe Context Destructuring ---
     const context = useContext(SettingsContext) || {};
     const language = context.language || 'en';
@@ -78,7 +80,7 @@ const ClientDetailView = ({ client, projects = [], transactions = [], onBack }) 
                     <h3 className="font-bold text-card-foreground mb-4 flex items-center gap-2"><HardHat size={18} className="text-orange-500" /> {T.projectsWithCount ? T.projectsWithCount(clientProjects.length) : `Projects (${clientProjects.length})`}</h3>
                     <div className="space-y-2 max-h-48 overflow-y-auto pr-2">
                         {clientProjects.length > 0 ? clientProjects.map(p => (
-                            <div key={p.id} className="p-3 bg-muted rounded-lg flex justify-between items-center">
+                            <div key={p.id} onClick={() => setSelectedProjectForPopup(p)} className="p-3 bg-muted rounded-lg flex justify-between items-center cursor-pointer hover:bg-accent border border-transparent hover:border-primary/30 transition-all">
                                 <div>
                                     <p className="font-medium text-foreground">{p.name}</p>
                                     <p className="text-xs text-muted-foreground">{p.location}</p>
@@ -122,12 +124,27 @@ const ClientDetailView = ({ client, projects = [], transactions = [], onBack }) 
                     </table>
                 </div>
             </div>
+
+            {selectedProjectForPopup && (
+                <Modal title={T.projectReport || 'Project Report'} onClose={() => setSelectedProjectForPopup(null)} size="max-w-5xl">
+                    <ProjectPopupDetails
+                        project={selectedProjectForPopup}
+                        T={T}
+                        transactions={transactions}
+                        employees={employees}
+                        equipment={equipment}
+                        attendance={attendance}
+                        onNavigate={onNavigate}
+                        onClose={() => setSelectedProjectForPopup(null)}
+                    />
+                </Modal>
+            )}
         </div>
     )
 }
 
 
-const Clients = ({ clients = [], projects = [], transactions = [], onDelete, onOpenModal }) => {
+const Clients = ({ clients = [], projects = [], transactions = [], employees = [], equipment = [], attendance = [], onNavigate, onDelete, onOpenModal }) => {
     // --- Safe Context Destructuring ---
     const context = useContext(SettingsContext) || {};
     const language = context.language || 'en';
@@ -165,7 +182,7 @@ const Clients = ({ clients = [], projects = [], transactions = [], onDelete, onO
     }, [clients, searchQuery]);
 
     if (view === 'detail' && selectedClient) {
-        return <ClientDetailView client={selectedClient} projects={projects} transactions={transactions} onBack={handleBackToList} />
+        return <ClientDetailView client={selectedClient} projects={projects} transactions={transactions} employees={employees} equipment={equipment} attendance={attendance} onNavigate={onNavigate} onBack={handleBackToList} />
     }
 
     return (
