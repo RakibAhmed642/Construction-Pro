@@ -110,7 +110,7 @@ const MetricDataList = ({ data = [], type, T = {}, language = 'en', projects = [
     );
 };
 
-const ActivityInfiniteList = ({ activities = [], T = {}, language = 'en' }) => {
+const ActivityInfiniteList = ({ activities = [], T = {}, language = 'en', onItemClick }) => {
     const [visibleCount, setVisibleCount] = useState(20);
     const loaderRef = useRef(null);
 
@@ -128,17 +128,21 @@ const ActivityInfiniteList = ({ activities = [], T = {}, language = 'en' }) => {
     return (
         <div className="space-y-4">
             {activities.slice(0, visibleCount).map((act, idx) => (
-                <div key={idx} className="flex items-center gap-4 p-4 bg-muted/30 rounded-xl border border-border/50 hover:bg-muted/50 transition-colors">
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 
-                        ${act.type === 'transaction' ? (act.data.type === 'income' ? 'bg-emerald-500' : 'bg-rose-500') :
-                            act.type === 'project' ? 'bg-orange-500' : 'bg-purple-500'}`}>
+                <div
+                    key={idx}
+                    onClick={() => onItemClick && onItemClick(act.type, act.data)}
+                    className="flex items-center gap-4 p-4 bg-muted/30 rounded-xl border border-border/50 hover:bg-muted/50 hover:border-border transition-colors cursor-pointer group shadow-sm hover:shadow"
+                >
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 transition-transform group-hover:scale-110 shadow-sm
+                        ${act.type === 'transaction' ? (act.data.type === 'income' ? 'bg-emerald-500 shadow-emerald-200' : 'bg-rose-500 shadow-rose-200') :
+                            act.type === 'project' ? 'bg-orange-500 shadow-orange-200' : 'bg-purple-500 shadow-purple-200'}`}>
                         {act.type === 'transaction' ? <DollarSign size={18} className="text-white" /> :
                             act.type === 'project' ? <HardHat size={18} className="text-white" /> :
                                 <Users size={18} className="text-white" />}
                     </div>
                     <div className="flex-1 min-w-0">
                         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1">
-                            <p className="font-bold text-sm text-foreground truncate">
+                            <p className="font-bold text-sm text-foreground truncate group-hover:text-primary transition-colors">
                                 {act.type === 'transaction' ? act.data.description : act.data.name}
                             </p>
                             <span className="text-[10px] font-mono font-bold text-muted-foreground bg-card px-2 py-1 rounded border border-border w-fit">
@@ -1341,6 +1345,7 @@ const Dashboard = ({
                             activities={allActivities}
                             T={T}
                             language={language}
+                            onItemClick={(type, data) => setModalContent({ type, data })}
                         />
                     </Modal>
                 )
