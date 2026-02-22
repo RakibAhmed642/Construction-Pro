@@ -18,8 +18,8 @@ const MaterialDetailModal = ({ material, transactions = [], projects = [], T = {
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 overflow-hidden">
             {/* Overlay */}
-            <div 
-                className="absolute inset-0 bg-black/60 backdrop-blur-md animate-fade-in" 
+            <div
+                className="absolute inset-0 bg-black/40 animate-fade-in"
                 onClick={onClose}
             />
             {/* Content */}
@@ -27,7 +27,7 @@ const MaterialDetailModal = ({ material, transactions = [], projects = [], T = {
                 <div className="flex justify-between items-center p-6 border-b border-border">
                     <div className="flex items-center gap-4">
                         <div className="p-3 bg-primary/10 text-primary rounded-lg">
-                            <Package size={24}/>
+                            <Package size={24} />
                         </div>
                         <div>
                             <h3 className="text-xl font-bold text-card-foreground">{material.name}</h3>
@@ -40,7 +40,7 @@ const MaterialDetailModal = ({ material, transactions = [], projects = [], T = {
                     <div className="bg-muted/50 rounded-lg p-6 border border-border">
                         <h4 className="font-semibold text-card-foreground mb-4">{T.stockLevel}</h4>
                         <div className="relative h-16 bg-border rounded-full flex items-center justify-center">
-                            <div style={{ width: `${stockPercentage}%`}} className={`absolute left-0 top-0 h-full rounded-full transition-all duration-500 ${isLowStock ? 'bg-red-500' : 'bg-primary'}`}></div>
+                            <div style={{ width: `${stockPercentage}%` }} className={`absolute left-0 top-0 h-full rounded-full transition-all duration-500 ${isLowStock ? 'bg-red-500' : 'bg-primary'}`}></div>
                             <div className="relative text-center">
                                 <p className="text-2xl font-bold text-white z-10">{material.currentStock.toLocaleString()}</p>
                                 <p className="text-xs font-semibold text-white/80 z-10">{material.unit}</p>
@@ -54,9 +54,9 @@ const MaterialDetailModal = ({ material, transactions = [], projects = [], T = {
                     </div>
 
                     <div>
-                        <h4 className="font-semibold text-card-foreground mb-2 flex items-center gap-2"><BarChart2 size={16}/> {T.recentActivity}</h4>
+                        <h4 className="font-semibold text-card-foreground mb-2 flex items-center gap-2"><BarChart2 size={16} /> {T.recentActivity}</h4>
                         <div className="border border-border rounded-lg overflow-hidden">
-                             <table className="w-full text-sm text-left">
+                            <table className="w-full text-sm text-left">
                                 <thead className="bg-muted/50 text-muted-foreground">
                                     <tr>
                                         <th className="p-3 font-medium">{T.date}</th>
@@ -80,7 +80,7 @@ const MaterialDetailModal = ({ material, transactions = [], projects = [], T = {
                                         <tr><td colSpan="4" className="p-6 text-center text-muted-foreground">{T.noMaterialActivity}</td></tr>
                                     )}
                                 </tbody>
-                             </table>
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -97,18 +97,18 @@ const MaterialsTab = ({ materials = [], transactions = [], projects = [], T = {}
         const isLow = stock < reorder;
         return <span className={`px-2 py-1 text-xs font-semibold rounded-full ${isLow ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>{isLow ? T.lowStock : T.inStock}</span>;
     };
-    
+
     return (
-         <div className="space-y-6">
+        <div className="space-y-6">
             <div className="flex justify-between items-center">
                 <h3 className="text-xl font-bold text-card-foreground">{T.materialStock}</h3>
                 <div className="flex items-center gap-3">
-                    <button onClick={() => onOpenModal?.('add_material')} className="bg-primary text-primary-foreground px-4 py-2 rounded-lg flex items-center gap-2"><Plus size={16}/> {T.add}</button>
-                    <button onClick={() => onOpenModal?.('stock_in')} className="bg-green-600 text-white px-4 py-2 rounded-lg flex items-center gap-2"><Plus size={16}/> {T.stockIn}</button>
-                    <button onClick={() => onOpenModal?.('stock_out')} className="bg-red-600 text-white px-4 py-2 rounded-lg flex items-center gap-2"><Plus size={16}/> {T.stockOut}</button>
+                    <button onClick={() => onOpenModal?.('add_material')} className="bg-primary text-primary-foreground px-4 py-2 rounded-lg flex items-center gap-2"><Plus size={16} /> {T.add}</button>
+                    <button onClick={() => onOpenModal?.('stock_in')} className="bg-green-600 text-white px-4 py-2 rounded-lg flex items-center gap-2"><Plus size={16} /> {T.stockIn}</button>
+                    <button onClick={() => onOpenModal?.('stock_out')} className="bg-red-600 text-white px-4 py-2 rounded-lg flex items-center gap-2"><Plus size={16} /> {T.stockOut}</button>
                 </div>
             </div>
-             <div className="bg-card rounded-xl shadow-sm border border-border overflow-hidden">
+            <div className="bg-card rounded-xl shadow-sm border border-border overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full text-sm text-left">
                         <thead className="bg-muted text-muted-foreground">
