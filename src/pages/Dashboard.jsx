@@ -164,7 +164,7 @@ const ActivityInfiniteList = ({ activities = [], T = {}, language = 'en' }) => {
     );
 };
 
-const ProjectPopupDetails = ({ project, transactions = [], employees = [], equipment = [], attendance = [], T = {}, onNavigate, onClose }) => {
+export const ProjectPopupDetails = ({ project, transactions = [], employees = [], equipment = [], attendance = [], T = {}, onNavigate, onClose }) => {
     const [activeSection, setActiveSection] = useState('transactions');
 
     const projectData = useMemo(() => {
