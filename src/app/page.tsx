@@ -1,19 +1,19 @@
 
 'use client';
 import React, { useState, useEffect, useContext } from 'react';
-import { 
-  collection, 
-  addDoc, 
-  query, 
-  orderBy, 
-  onSnapshot, 
-  serverTimestamp, 
+import {
+  collection,
+  addDoc,
+  query,
+  orderBy,
+  onSnapshot,
+  serverTimestamp,
   doc,
   updateDoc,
   deleteDoc,
   setDoc
 } from 'firebase/firestore';
-import { 
+import {
   onAuthStateChanged,
   User
 } from 'firebase/auth';
@@ -28,11 +28,11 @@ import Workforce from '@/pages/Workforce';
 import ProfitPilot from '@/pages/ProfitPilot';
 import Auth from '@/components/Auth';
 import { Modal } from '@/components/UI';
-import { 
-  ProjectForm, 
-  EmployeeForm, 
-  ClientForm, 
-  TransactionForm, 
+import {
+  ProjectForm,
+  EmployeeForm,
+  ClientForm,
+  TransactionForm,
   EmployeePaymentForm,
   AttendanceForm,
   EquipmentForm,
@@ -42,8 +42,8 @@ import {
 } from '@/components/Forms';
 import { Menu, Calendar } from 'lucide-react';
 import { SettingsContext, DEFAULT_PAYROLL_RATES, DEFAULT_ROLES } from '@/context/SettingsContext';
-import { 
-  initializeFirebase, 
+import {
+  initializeFirebase,
   FirebaseClientProvider,
   useFirestore,
   useAuth
@@ -59,12 +59,12 @@ function AppContent() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [loading, setLoading] = useState(true);
-  
-  const { 
-    language, translations, 
+
+  const {
+    language, translations,
     setUserName, setBusinessName, setLogoUrl,
     setPayrollRates, setOvertimeMultiplier,
-    setRoles, setSaveToDb 
+    setRoles, setSaveToDb
   } = useContext(SettingsContext);
   const T = translations[language];
 
@@ -92,7 +92,7 @@ function AppContent() {
   // 1. Auth Listener
   useEffect(() => {
     if (!firebaseAuth) return;
-    
+
     const unsubscribe = onAuthStateChanged(firebaseAuth, (currentUser) => {
       setUser(currentUser);
       if (!currentUser) {
@@ -107,7 +107,7 @@ function AppContent() {
     if (!db || !user) return;
 
     setLoading(true);
-    
+
     // Setup save to DB function in context
     setSaveToDb(() => (data: any) => {
       const settingsRef = doc(db, 'users', user.uid, 'settings', 'config');
@@ -135,43 +135,43 @@ function AppContent() {
           if (data.roles) setRoles(data.roles);
         }
       }, err => {
-          const permissionError = new FirestorePermissionError({
-            path: `users/${user.uid}/settings/config`,
-            operation: 'get',
-          });
-          errorEmitter.emit('permission-error', permissionError);
+        const permissionError = new FirestorePermissionError({
+          path: `users/${user.uid}/settings/config`,
+          operation: 'get',
+        });
+        errorEmitter.emit('permission-error', permissionError);
       }),
 
-      onSnapshot(query(collection(db, 'users', user.uid, 'projects'), orderBy('createdAt', 'desc')), 
-        s => setProjects(s.docs.map(d => ({id:d.id, ...d.data()}))), 
+      onSnapshot(query(collection(db, 'users', user.uid, 'projects'), orderBy('createdAt', 'desc')),
+        s => setProjects(s.docs.map(d => ({ id: d.id, ...d.data() }))),
         err => console.error("Error loading projects")),
-      
-      onSnapshot(query(collection(db, 'users', user.uid, 'clients'), orderBy('createdAt', 'desc')), 
-        s => setClients(s.docs.map(d => ({id:d.id, ...d.data()}))), 
+
+      onSnapshot(query(collection(db, 'users', user.uid, 'clients'), orderBy('createdAt', 'desc')),
+        s => setClients(s.docs.map(d => ({ id: d.id, ...d.data() }))),
         err => console.error("Error loading clients")),
-      
-      onSnapshot(query(collection(db, 'users', user.uid, 'transactions'), orderBy('createdAt', 'desc')), 
-        s => setTransactions(s.docs.map(d => ({id:d.id, ...d.data()}))), 
+
+      onSnapshot(query(collection(db, 'users', user.uid, 'transactions'), orderBy('createdAt', 'desc')),
+        s => setTransactions(s.docs.map(d => ({ id: d.id, ...d.data() }))),
         err => console.error("Error loading transactions")),
-      
-      onSnapshot(query(collection(db, 'users', user.uid, 'employees'), orderBy('createdAt', 'desc')), 
-        s => setEmployees(s.docs.map(d => ({id:d.id, ...d.data()}))), 
+
+      onSnapshot(query(collection(db, 'users', user.uid, 'employees'), orderBy('createdAt', 'desc')),
+        s => setEmployees(s.docs.map(d => ({ id: d.id, ...d.data() }))),
         err => console.error("Error loading employees")),
-      
-      onSnapshot(query(collection(db, 'users', user.uid, 'attendance'), orderBy('date', 'desc')), 
-        s => setAttendance(s.docs.map(d => ({id:d.id, ...d.data()}))), 
+
+      onSnapshot(query(collection(db, 'users', user.uid, 'attendance'), orderBy('date', 'desc')),
+        s => setAttendance(s.docs.map(d => ({ id: d.id, ...d.data() }))),
         err => console.error("Error loading attendance")),
-      
-      onSnapshot(query(collection(db, 'users', user.uid, 'equipment')), 
-        s => setEquipment(s.docs.map(d => ({id:d.id, ...d.data()}))), 
+
+      onSnapshot(query(collection(db, 'users', user.uid, 'equipment')),
+        s => setEquipment(s.docs.map(d => ({ id: d.id, ...d.data() }))),
         err => console.error("Error loading equipment")),
 
-      onSnapshot(query(collection(db, 'users', user.uid, 'scenarios'), orderBy('createdAt', 'desc')), 
-        s => setScenarios(s.docs.map(d => ({id:d.id, ...d.data()}))), 
+      onSnapshot(query(collection(db, 'users', user.uid, 'scenarios'), orderBy('createdAt', 'desc')),
+        s => setScenarios(s.docs.map(d => ({ id: d.id, ...d.data() }))),
         err => console.error("Error loading scenarios")),
 
-      onSnapshot(query(collection(db, 'users', user.uid, 'documents'), orderBy('createdAt', 'desc')), 
-        s => setDocuments(s.docs.map(d => ({id:d.id, ...d.data()}))), 
+      onSnapshot(query(collection(db, 'users', user.uid, 'documents'), orderBy('createdAt', 'desc')),
+        s => setDocuments(s.docs.map(d => ({ id: d.id, ...d.data() }))),
         err => {
           const permissionError = new FirestorePermissionError({
             path: `users/${user.uid}/documents`,
@@ -179,24 +179,24 @@ function AppContent() {
           });
           errorEmitter.emit('permission-error', permissionError);
         }),
-      
-      onSnapshot(query(collection(db, 'users', user.uid, 'materials')), 
-        s => { setMaterials(s.docs.map(d => ({id:d.id, ...d.data()}))); setLoading(false); }, 
+
+      onSnapshot(query(collection(db, 'users', user.uid, 'materials')),
+        s => { setMaterials(s.docs.map(d => ({ id: d.id, ...d.data() }))); setLoading(false); },
         err => { console.error("Error loading materials"); setLoading(false); })
     ];
-    
+
     return () => unsubs.forEach(u => u());
   }, [db, user]);
 
   const handleAdd = (coll: string, data: any) => {
-    if(!db || !user) return;
+    if (!db || !user) return;
     const { id: _, ...addData } = data;
     const sanitizedData = JSON.parse(JSON.stringify(addData));
     const colRef = collection(db, 'users', user.uid, coll);
-    
-    addDoc(colRef, { 
-      ...sanitizedData, 
-      createdAt: serverTimestamp() 
+
+    addDoc(colRef, {
+      ...sanitizedData,
+      createdAt: serverTimestamp()
     }).catch(async (serverError) => {
       const permissionError = new FirestorePermissionError({
         path: `users/${user.uid}/${coll}`,
@@ -210,14 +210,14 @@ function AppContent() {
   };
 
   const handleUpdate = (coll: string, id: string, data: any) => {
-    if(!db || !user || !id) return;
+    if (!db || !user || !id) return;
     const { id: _, createdAt: __, ...updateData } = data;
     const sanitizedData = JSON.parse(JSON.stringify(updateData));
     const docRef = doc(db, 'users', user.uid, coll, id);
-    
-    updateDoc(docRef, { 
-      ...sanitizedData, 
-      updatedAt: serverTimestamp() 
+
+    updateDoc(docRef, {
+      ...sanitizedData,
+      updatedAt: serverTimestamp()
     }).catch(async (serverError) => {
       const permissionError = new FirestorePermissionError({
         path: docRef.path,
@@ -231,8 +231,8 @@ function AppContent() {
   };
 
   const handleDelete = (coll: string, id: string) => {
-    if(!db || !user || !id) return;
-    if(window.confirm(T.confirmDelete)) {
+    if (!db || !user || !id) return;
+    if (window.confirm(T.confirmDelete)) {
       const docRef = doc(db, 'users', user.uid, coll, id);
       deleteDoc(docRef).catch(async (serverError) => {
         const permissionError = new FirestorePermissionError({
@@ -306,7 +306,7 @@ function AppContent() {
             {activeTab === 'dashboard' && <Dashboard projects={projects} clients={clients} transactions={transactions} employees={employees} equipment={equipment} attendance={attendance} materials={materials} onNavigate={handleNavigate} onQuickAdd={(type) => openModal(type)} />}
             {activeTab === 'projects' && <Projects projects={projects} clients={clients} onAdd={(data) => handleAdd('projects', data)} onUpdate={(id, data) => handleUpdate('projects', id, data)} onDelete={(id) => handleDelete('projects', id)} employees={employees} transactions={transactions} equipment={equipment} attendance={attendance} materials={materials} documents={documents} onAddDocument={(data) => handleAdd('documents', data)} onDeleteDocument={(id) => handleDelete('documents', id)} onNavigate={handleNavigate} onOpenModal={openModal} />}
             {activeTab === 'employees' && <Employees employees={employees} projects={projects} transactions={transactions} attendance={attendance} onAdd={(data) => handleAdd('employees', data)} onUpdate={(id, data) => handleUpdate('employees', id, data)} onDelete={(id) => handleDelete('employees', id)} onOpenModal={openModal} initialEmployeeId={jumpToEmployeeId} onClearInitialEmployee={() => setJumpToEmployeeId(null)} />}
-            {activeTab === 'clients' && <Clients clients={clients} projects={projects} transactions={transactions} onAdd={(data) => handleAdd('clients', data)} onUpdate={(id, data) => handleUpdate('clients', id, data)} onDelete={(id) => handleDelete('clients', id)} onOpenModal={openModal} />}
+            {activeTab === 'clients' && <Clients clients={clients} projects={projects} transactions={transactions} employees={employees} equipment={equipment} attendance={attendance} onNavigate={handleNavigate} onAdd={(data) => handleAdd('clients', data)} onUpdate={(id, data) => handleUpdate('clients', id, data)} onDelete={(id) => handleDelete('clients', id)} onOpenModal={openModal} />}
             {activeTab === 'workforce' && <Workforce attendance={attendance} payrollData={transactions} equipment={equipment} materials={materials} employees={employees} projects={projects} onOpenModal={openModal} onDelete={(coll, id) => handleDelete(coll, id)} initialTab={workforceInitialTab} initialEquipmentId={jumpToEquipmentId} onClearInitialEquipment={() => { setJumpToEquipmentId(null); setWorkforceInitialTab('attendance'); }} />}
             {activeTab === 'finance' && <Finance transactions={transactions} projects={projects} onAdd={(data) => handleAdd('transactions', data)} onUpdate={(id, data) => handleUpdate('transactions', id, data)} onDelete={(id) => handleDelete('transactions', id)} onOpenModal={openModal} />}
             {activeTab === 'profit-pilot' && <ProfitPilot scenarios={scenarios} onAddScenario={(data) => handleAdd('scenarios', data)} onDeleteScenario={(id) => handleDelete('scenarios', id)} />}
@@ -318,10 +318,10 @@ function AppContent() {
       {/* Global Modals */}
       {modalState.type === 'projects' && <Modal title={T.newProject} onClose={closeModal}><ProjectForm clients={clients} onClose={closeModal} onSave={(data) => handleAdd('projects', data)} /></Modal>}
       {modalState.type === 'edit_project' && <Modal title={T.editProject} onClose={closeModal}><ProjectForm initialData={modalState.data} clients={clients} onClose={closeModal} onSave={(data) => handleUpdate('projects', modalState.data.id, data)} /></Modal>}
-      
+
       {modalState.type === 'employees' && <Modal title={T.addNewEmployee} onClose={closeModal}><EmployeeForm projects={projects} onClose={closeModal} onSave={(data) => handleAdd('employees', data)} /></Modal>}
       {modalState.type === 'edit_employee' && <Modal title={T.editEmployee} onClose={closeModal}><EmployeeForm initialData={modalState.data} projects={projects} onClose={closeModal} onSave={(data) => handleUpdate('employees', modalState.data.id, data)} /></Modal>}
-      
+
       {modalState.type === 'clients' && <Modal title={T.addNewClient} onClose={closeModal}><ClientForm onClose={closeModal} onSave={(data) => handleAdd('clients', data)} /></Modal>}
       {modalState.type === 'edit_client' && <Modal title={T.editClient} onClose={closeModal}><ClientForm initialData={modalState.data} onClose={closeModal} onSave={(data) => handleUpdate('clients', modalState.data.id, data)} /></Modal>}
 
@@ -329,57 +329,57 @@ function AppContent() {
       {modalState.type === 'edit_transaction' && <Modal title={T.editTransaction} onClose={closeModal}><TransactionForm initialData={modalState.data} projects={projects} onClose={closeModal} onSave={(data) => handleUpdate('transactions', modalState.data.id, data)} /></Modal>}
 
       {modalState.type === 'pay_employee' && modalState.data && <Modal title={T.paymentFor(modalState.data.name)} onClose={closeModal}><EmployeePaymentForm employee={modalState.data} onClose={closeModal} onPay={(amount, date) => { handleAdd('transactions', { description: `Salary: ${modalState.data.name} (${modalState.data.role})`, employeeId: modalState.data.id, amount: Number(amount), type: 'expense', category: 'labor', date: date }); handleUpdate('employees', modalState.data.id, { totalPaid: Number(modalState.data.totalPaid || 0) + Number(amount) }); }} /></Modal>}
-    
+
       {/* Workforce Modals */}
       {modalState.type === 'mark_attendance' && <Modal title={T.markAttendance} onClose={closeModal}> <AttendanceForm employees={employees} projects={projects} onSave={(data) => handleAdd('attendance', data)} /> </Modal>}
       {modalState.type === 'edit_attendance' && <Modal title={T.markAttendance} onClose={closeModal}> <AttendanceForm initialData={modalState.data} employees={employees} projects={projects} onSave={(data) => handleUpdate('attendance', modalState.data.id, data)} /> </Modal>}
-      
+
       {modalState.type === 'add_equipment' && <Modal title={T.addEquipment} onClose={closeModal}> <EquipmentForm projects={projects} onSave={(data) => handleAdd('equipment', data)} /> </Modal>}
       {modalState.type === 'edit_equipment' && <Modal title={T.editEquipment} onClose={closeModal}> <EquipmentForm initialData={modalState.data} projects={projects} onSave={(data) => handleUpdate('equipment', modalState.data.id, data)} /> </Modal>}
-      
+
       {modalState.type === 'add_material' && <Modal title={T.addMaterial} onClose={closeModal}> <MaterialForm onSave={(data) => handleAdd('materials', data)} /> </Modal>}
       {modalState.type === 'edit_material' && <Modal title={T.editMaterial} onClose={closeModal}> <MaterialForm initialData={modalState.data} onSave={(data) => handleUpdate('materials', modalState.data.id, data)} /> </Modal>}
 
       {modalState.type === 'stock_in' && (
-          <Modal title={T.stockIn} onClose={closeModal}>
-              <MaterialStockInForm 
-                  materials={materials} 
-                  projects={projects}
-                  onSave={(data) => {
-                      const material = materials.find(m => m.id === data.materialId);
-                      if(material) {
-                          handleAdd('transactions', {
-                              description: `Stock In: ${material.name} (x${data.quantity})`,
-                              amount: data.totalCost,
-                              type: 'expense',
-                              category: 'materials',
-                              date: data.date,
-                              paymentMethod: data.paymentMethod,
-                              projectId: data.projectId || null
-                          });
-                          handleUpdate('materials', data.materialId, {
-                              currentStock: Number(material.currentStock) + Number(data.quantity)
-                          });
-                      }
-                  }} 
-              />
-          </Modal>
+        <Modal title={T.stockIn} onClose={closeModal}>
+          <MaterialStockInForm
+            materials={materials}
+            projects={projects}
+            onSave={(data) => {
+              const material = materials.find(m => m.id === data.materialId);
+              if (material) {
+                handleAdd('transactions', {
+                  description: `Stock In: ${material.name} (x${data.quantity})`,
+                  amount: data.totalCost,
+                  type: 'expense',
+                  category: 'materials',
+                  date: data.date,
+                  paymentMethod: data.paymentMethod,
+                  projectId: data.projectId || null
+                });
+                handleUpdate('materials', data.materialId, {
+                  currentStock: Number(material.currentStock) + Number(data.quantity)
+                });
+              }
+            }}
+          />
+        </Modal>
       )}
       {modalState.type === 'stock_out' && (
-          <Modal title={T.stockOut} onClose={closeModal}>
-              <MaterialStockOutForm 
-                  materials={materials} 
-                  projects={projects}
-                  onSave={(data) => {
-                       const material = materials.find(m => m.id === data.materialId);
-                       if(material) {
-                            handleUpdate('materials', data.materialId, {
-                                currentStock: Number(material.currentStock) - Number(data.quantity)
-                            });
-                       }
-                  }} 
-              />
-          </Modal>
+        <Modal title={T.stockOut} onClose={closeModal}>
+          <MaterialStockOutForm
+            materials={materials}
+            projects={projects}
+            onSave={(data) => {
+              const material = materials.find(m => m.id === data.materialId);
+              if (material) {
+                handleUpdate('materials', data.materialId, {
+                  currentStock: Number(material.currentStock) - Number(data.quantity)
+                });
+              }
+            }}
+          />
+        </Modal>
       )}
     </div>
   );
