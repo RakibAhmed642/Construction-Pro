@@ -11,7 +11,15 @@ import {
   ArrowDownLeft,
   ChevronLeft,
   DollarSign,
-  Filter
+  Filter,
+  Phone,
+  Mail,
+  MapPin,
+  Calendar,
+  Building2,
+  BadgeCheck,
+  Clock,
+  Briefcase
 } from 'lucide-react';
 import { SettingsContext } from '@/context/SettingsContext';
 
@@ -37,10 +45,25 @@ const ProjectFinancialDetailView = ({ project, transactions = [], onBack, T = {}
           <button onClick={onBack} className="p-2 hover:bg-accent rounded-full transition-colors">
             <ChevronLeft size={24} className="text-muted-foreground" />
           </button>
-          <div>
-            <p className="text-sm text-muted-foreground">{T.projectReport || 'Project Report'}</p>
-            <h2 className="text-2xl font-bold text-card-foreground">{project.name}</h2>
-            <p className="text-sm text-muted-foreground">{T.client || 'Client'}: {project.clientName}</p>
+          <div className="flex-1">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-1">
+              <p className="text-sm font-semibold text-primary uppercase tracking-wider">{T.projectReport || 'Project Report'}</p>
+              {project.status && (
+                <span className={`px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wider w-fit ${project.status === 'completed' ? 'bg-green-100 text-green-700' :
+                  project.status === 'ongoing' ? 'bg-blue-100 text-blue-700' :
+                    'bg-orange-100 text-orange-700'
+                  }`}>
+                  {T[project.status] || project.status}
+                </span>
+              )}
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-bold text-card-foreground mb-3">{project.name}</h2>
+            <div className="flex flex-wrap items-center gap-3 sm:gap-6 text-sm text-muted-foreground">
+              <span className="flex items-center gap-1.5"><Briefcase size={16} /> {project.clientName}</span>
+              {project.location && <span className="flex items-center gap-1.5"><MapPin size={16} /> {project.location}</span>}
+              {project.startDate && <span className="flex items-center gap-1.5"><Calendar size={16} /> {project.startDate}</span>}
+            </div>
+            {project.description && <p className="mt-4 pt-4 border-t border-border text-sm text-muted-foreground max-w-3xl">{project.description}</p>}
           </div>
         </div>
       </div>
@@ -127,10 +150,22 @@ const ClientFinancialDetailView = ({ client, projects = [], transactions = [], o
           <button onClick={onBack} className="p-2 hover:bg-accent rounded-full transition-colors">
             <ChevronLeft size={24} className="text-muted-foreground" />
           </button>
-          <div>
-            <p className="text-sm text-muted-foreground">{T.clientReport || 'Client Report'}</p>
-            <h2 className="text-2xl font-bold text-card-foreground">{client.name}</h2>
-            <p className="text-sm text-muted-foreground">{client.company || client.phone}</p>
+          <div className="flex-1">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-1">
+              <p className="text-sm font-semibold text-primary uppercase tracking-wider">{T.clientReport || 'Client Report'}</p>
+              {client.status && (
+                <span className="px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wider w-fit bg-green-100 text-green-700">
+                  {T[client.status] || client.status}
+                </span>
+              )}
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-bold text-card-foreground mb-3">{client.name}</h2>
+            <div className="flex flex-wrap items-center gap-3 sm:gap-6 text-sm text-muted-foreground">
+              {client.company && <span className="flex items-center gap-1.5"><Building2 size={16} /> {client.company}</span>}
+              {client.phone && <span className="flex items-center gap-1.5"><Phone size={16} /> {client.phone}</span>}
+              {client.email && <span className="flex items-center gap-1.5"><Mail size={16} /> {client.email}</span>}
+              {client.address && <span className="flex items-center gap-1.5"><MapPin size={16} /> {client.address}</span>}
+            </div>
           </div>
         </div>
       </div>
@@ -215,10 +250,34 @@ const EmployeeFinancialDetailView = ({ employee, transactions = [], onBack, T = 
           <button onClick={onBack} className="p-2 hover:bg-accent rounded-full transition-colors">
             <ChevronLeft size={24} className="text-muted-foreground" />
           </button>
-          <div>
-            <p className="text-sm text-muted-foreground">{T.employeeReport || 'Employee Report'}</p>
-            <h2 className="text-2xl font-bold text-card-foreground">{employee.name}</h2>
-            <span className="inline-block mt-1 px-2 py-0.5 rounded text-xs font-bold uppercase bg-primary/10 text-primary">{employee.role || 'Staff'}</span>
+          <div className="flex-1">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-1">
+              <p className="text-sm font-semibold text-primary uppercase tracking-wider">{T.employeeReport || 'Employee Report'}</p>
+              <div className="flex gap-2">
+                <span className="px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wider w-fit bg-blue-100 text-blue-700">
+                  {employee.role || 'Staff'}
+                </span>
+                {employee.status && (
+                  <span className="px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wider w-fit bg-green-100 text-green-700">
+                    {T[employee.status] || employee.status}
+                  </span>
+                )}
+              </div>
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-bold text-card-foreground mb-3">{employee.name}</h2>
+            <div className="flex flex-wrap items-center gap-3 sm:gap-6 text-sm text-muted-foreground border-b border-border pb-4 mb-4">
+              {employee.phone && <span className="flex items-center gap-1.5"><Phone size={16} /> {employee.phone}</span>}
+              {employee.email && <span className="flex items-center gap-1.5"><Mail size={16} /> {employee.email}</span>}
+              {employee.joinDate && <span className="flex items-center gap-1.5"><Calendar size={16} /> {T.joined || 'Joined'} {employee.joinDate}</span>}
+              {employee.baseSalary && <span className="flex items-center gap-1.5"><DollarSign size={16} /> {T.baseSalary || 'Base Salary'}: ৳{Number(employee.baseSalary).toLocaleString()}</span>}
+            </div>
+            <div className="flex flex-wrap gap-2 mt-4">
+              {employee.skills?.map((skill, idx) => (
+                <span key={idx} className="bg-muted text-muted-foreground px-2 py-1 rounded text-xs">
+                  {skill}
+                </span>
+              ))}
+            </div>
           </div>
         </div>
       </div>
@@ -317,6 +376,29 @@ const Finance = ({ transactions = [], projects = [], clients = [], employees = [
     const roles = new Set(employees?.map(e => e.role).filter(Boolean));
     return Array.from(roles);
   }, [employees]);
+
+  const filteredProjectReports = useMemo(() => {
+    return projectFinancials.filter(p => !searchQuery ||
+      p.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      p.clientName?.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [projectFinancials, searchQuery]);
+
+  const filteredClientReports = useMemo(() => {
+    return clientFinancials.filter(c => !searchQuery ||
+      c.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      c.phone?.includes(searchQuery) ||
+      c.company?.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [clientFinancials, searchQuery]);
+
+  const filteredEmployeeReports = useMemo(() => {
+    return employeeFinancials.filter(e => !searchQuery ||
+      e.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      e.phone?.includes(searchQuery) ||
+      e.role?.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [employeeFinancials, searchQuery]);
 
   if (activeView === 'project_reports' && selectedProjectForReport) {
     return <ProjectFinancialDetailView project={selectedProjectForReport} transactions={transactions} onBack={() => setSelectedProjectForReport(null)} T={T} />
@@ -434,77 +516,101 @@ const Finance = ({ transactions = [], projects = [], clients = [], employees = [
       )}
 
       {activeView === 'project_reports' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in">
-          {projectFinancials.map(proj => (
-            <div
-              key={proj.id}
-              onClick={() => setSelectedProjectForReport(proj)}
-              className="bg-card p-6 rounded-xl border border-border shadow-sm hover:shadow-md hover:border-primary transition-all cursor-pointer group"
-            >
-              <div className="flex justify-between items-start mb-4">
-                <div>
-                  <h3 className="font-bold text-card-foreground text-lg group-hover:text-primary transition-colors">{proj.name}</h3>
-                  <p className="text-xs text-muted-foreground max-w-[150px] truncate">{proj.clientName}</p>
-                </div>
-                <span className={`px-2 py-1 text-[10px] uppercase tracking-wider rounded-md font-bold shrink-0 ${proj.netProfit >= 0 ? 'bg-green-100 text-green-700 border border-green-200' : 'bg-red-100 text-red-700 border border-red-200'}`}>
-                  {proj.netProfit >= 0 ? (T.profitable || 'Profitable') : (T.loss || 'Loss')}
-                </span>
-              </div>
-
-              <div className="space-y-3">
-                <div className="flex justify-between items-center p-2 bg-green-500/10 rounded-lg">
-                  <span className="text-xs font-bold text-green-700 flex items-center gap-1.5 uppercase tracking-widest"><ArrowUpRight size={14} /> {T.income || 'Income'}</span>
-                  <span className="font-bold text-green-800">৳{proj.totalIncome.toLocaleString()}</span>
-                </div>
-                <div className="flex justify-between items-center p-2 bg-red-500/10 rounded-lg">
-                  <span className="text-xs font-bold text-red-700 flex items-center gap-1.5 uppercase tracking-widest"><ArrowDownLeft size={14} /> {T.expense || 'Expense'}</span>
-                  <span className="font-bold text-red-800">৳{proj.totalExpense.toLocaleString()}</span>
-                </div>
-                <div className="pt-3 border-t border-border flex justify-between items-center">
-                  <span className="text-[10px] font-bold uppercase text-muted-foreground tracking-widest">{T.netBalance || 'Net Balance'}</span>
-                  <span className={`font-bold text-xl tracking-tight ${proj.netProfit >= 0 ? 'text-foreground' : 'text-red-600'}`}>
-                    ৳{proj.netProfit.toLocaleString()}
+        <div className="space-y-4 animate-fade-in">
+          <div className="relative mb-6">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={18} />
+            <input
+              type="text"
+              placeholder={T.searchProjects || 'Search projects by name or client...'}
+              className="w-full pl-10 pr-4 py-2 border border-border bg-background rounded-lg outline-none focus:ring-2 focus:ring-primary"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredProjectReports.map(proj => (
+              <div
+                key={proj.id}
+                onClick={() => setSelectedProjectForReport(proj)}
+                className="bg-card p-6 rounded-xl border border-border shadow-sm hover:shadow-md hover:border-primary transition-all cursor-pointer group"
+              >
+                <div className="flex justify-between items-start mb-4">
+                  <div>
+                    <h3 className="font-bold text-card-foreground text-lg group-hover:text-primary transition-colors">{proj.name}</h3>
+                    <p className="text-xs text-muted-foreground max-w-[150px] truncate">{proj.clientName}</p>
+                  </div>
+                  <span className={`px-2 py-1 text-[10px] uppercase tracking-wider rounded-md font-bold shrink-0 ${proj.netProfit >= 0 ? 'bg-green-100 text-green-700 border border-green-200' : 'bg-red-100 text-red-700 border border-red-200'}`}>
+                    {proj.netProfit >= 0 ? (T.profitable || 'Profitable') : (T.loss || 'Loss')}
                   </span>
                 </div>
+
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center p-2 bg-green-500/10 rounded-lg">
+                    <span className="text-xs font-bold text-green-700 flex items-center gap-1.5 uppercase tracking-widest"><ArrowUpRight size={14} /> {T.income || 'Income'}</span>
+                    <span className="font-bold text-green-800">৳{proj.totalIncome.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between items-center p-2 bg-red-500/10 rounded-lg">
+                    <span className="text-xs font-bold text-red-700 flex items-center gap-1.5 uppercase tracking-widest"><ArrowDownLeft size={14} /> {T.expense || 'Expense'}</span>
+                    <span className="font-bold text-red-800">৳{proj.totalExpense.toLocaleString()}</span>
+                  </div>
+                  <div className="pt-3 border-t border-border flex justify-between items-center">
+                    <span className="text-[10px] font-bold uppercase text-muted-foreground tracking-widest">{T.netBalance || 'Net Balance'}</span>
+                    <span className={`font-bold text-xl tracking-tight ${proj.netProfit >= 0 ? 'text-foreground' : 'text-red-600'}`}>
+                      ৳{proj.netProfit.toLocaleString()}
+                    </span>
+                  </div>
+                </div>
               </div>
-            </div>
-          ))}
-          {projectFinancials.length === 0 && <div className="col-span-full text-center py-10 text-muted-foreground">{T.noProjectsToReport || 'No projects available to report on.'}</div>}
+            ))}
+            {filteredProjectReports.length === 0 && <div className="col-span-full text-center py-10 text-muted-foreground">{T.noProjectsToReport || 'No projects available to report on based on your search.'}</div>}
+          </div>
         </div>
       )}
 
       {activeView === 'client_reports' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in">
-          {clientFinancials.map(client => (
-            <div
-              key={client.id}
-              onClick={() => setSelectedClientForReport(client)}
-              className="bg-card p-6 rounded-xl border border-border shadow-sm hover:shadow-md hover:border-primary transition-all cursor-pointer group"
-            >
-              <div className="flex justify-between items-start mb-4">
-                <div className="flex gap-3 items-center min-w-0">
-                  <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xl shrink-0">
-                    {client.name?.charAt(0) || '?'}
-                  </div>
-                  <div className="min-w-0">
-                    <h3 className="font-bold text-card-foreground text-lg group-hover:text-primary transition-colors truncate">{client.name}</h3>
-                    <p className="text-xs text-muted-foreground truncate">{client.company || 'Individual Client'}</p>
+        <div className="space-y-4 animate-fade-in">
+          <div className="relative mb-6">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={18} />
+            <input
+              type="text"
+              placeholder={T.searchClients || 'Search clients by name, phone, or company...'}
+              className="w-full pl-10 pr-4 py-2 border border-border bg-background rounded-lg outline-none focus:ring-2 focus:ring-primary"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredClientReports.map(client => (
+              <div
+                key={client.id}
+                onClick={() => setSelectedClientForReport(client)}
+                className="bg-card p-6 rounded-xl border border-border shadow-sm hover:shadow-md hover:border-primary transition-all cursor-pointer group"
+              >
+                <div className="flex justify-between items-start mb-4">
+                  <div className="flex gap-3 items-center min-w-0">
+                    <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xl shrink-0">
+                      {client.name?.charAt(0) || '?'}
+                    </div>
+                    <div className="min-w-0">
+                      <h3 className="font-bold text-card-foreground text-lg group-hover:text-primary transition-colors truncate">{client.name}</h3>
+                      <p className="text-xs text-muted-foreground truncate">{client.company || 'Individual Client'}</p>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <div className="space-y-3">
-                <div className="flex justify-between items-center p-2 bg-green-500/10 rounded-lg border border-green-500/20">
-                  <span className="text-xs font-bold text-green-700 flex items-center gap-1.5 uppercase tracking-widest"><ArrowUpRight size={14} /> {T.valueBilled || 'Billed'}</span>
-                  <span className="font-bold text-green-800 tracking-tight">৳{client.totalIncome.toLocaleString()}</span>
-                </div>
-                <div className="flex justify-between items-center mt-2 px-1">
-                  <span className="text-xs text-muted-foreground flex items-center gap-1"><HardHat size={12} /> {client.activeProjectsCount} {T.projects || 'Projects'}</span>
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center p-2 bg-green-500/10 rounded-lg border border-green-500/20">
+                    <span className="text-xs font-bold text-green-700 flex items-center gap-1.5 uppercase tracking-widest"><ArrowUpRight size={14} /> {T.valueBilled || 'Billed'}</span>
+                    <span className="font-bold text-green-800 tracking-tight">৳{client.totalIncome.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between items-center mt-2 px-1">
+                    <span className="text-xs text-muted-foreground flex items-center gap-1"><HardHat size={12} /> {client.activeProjectsCount} {T.projects || 'Projects'}</span>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-          {clientFinancials.length === 0 && <div className="col-span-full text-center py-10 text-muted-foreground">{T.noClientsToReport || 'No clients available to report on.'}</div>}
+            ))}
+            {filteredClientReports.length === 0 && <div className="col-span-full text-center py-10 text-muted-foreground">{T.noClientsToReport || 'No clients found based on your search.'}</div>}
+          </div>
         </div>
       )}
 
@@ -541,8 +647,19 @@ const Finance = ({ transactions = [], projects = [], clients = [], employees = [
             </div>
           )}
 
+          <div className="relative mb-6">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={18} />
+            <input
+              type="text"
+              placeholder={T.searchEmployees || 'Search employees by name, role, or phone...'}
+              className="w-full pl-10 pr-4 py-2 border border-border bg-background rounded-lg outline-none focus:ring-2 focus:ring-primary"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {employeeFinancials.filter(e => employeeRoleFilter === 'all' || e.role === employeeRoleFilter).map(emp => (
+            {filteredEmployeeReports.filter(e => employeeRoleFilter === 'all' || e.role === employeeRoleFilter).map(emp => (
               <div
                 key={emp.id}
                 onClick={() => setSelectedEmployeeForReport(emp)}
