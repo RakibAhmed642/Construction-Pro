@@ -7,7 +7,7 @@ import { ClientForm } from '@/components/Forms';
 import { SettingsContext } from '@/context/SettingsContext';
 import { ProjectPopupDetails } from '@/pages/Dashboard';
 
-const ClientDetailView = ({ client, projects = [], transactions = [], employees = [], equipment = [], attendance = [], onNavigate, onBack }) => {
+const ClientDetailView = ({ client, projects = [], transactions = [], employees = [], equipment = [], attendance = [], onNavigate, onBack, onOpenModal }) => {
     const [selectedProjectForPopup, setSelectedProjectForPopup] = useState(null);
     // --- Safe Context Destructuring ---
     const context = useContext(SettingsContext) || {};
@@ -78,7 +78,21 @@ const ClientDetailView = ({ client, projects = [], transactions = [], employees 
                         </div>
                     </div>
                     <div className="bg-card p-6 rounded-xl border border-border shadow-sm">
-                        <h3 className="font-bold text-card-foreground mb-4 flex items-center gap-2"><HardHat size={18} className="text-orange-500" /> {T.projectsWithCount ? T.projectsWithCount(clientProjects.length) : `Projects (${clientProjects.length})`}</h3>
+                        <div className="flex justify-between items-center mb-4">
+                            <h3 className="font-bold text-card-foreground flex items-center gap-2">
+                                <HardHat size={18} className="text-orange-500" />
+                                <span className="flex items-center gap-2">
+                                    {T.projectsWithCount ? T.projectsWithCount(clientProjects.length) : `Projects (${clientProjects.length})`}
+                                    <button
+                                        onClick={() => onOpenModal?.('projects', { clientId: client.id })}
+                                        title={T.addProject || 'Add Project'}
+                                        className="p-1 bg-primary/10 text-primary hover:bg-primary hover:text-white rounded-full transition-colors shadow-sm"
+                                    >
+                                        <Plus size={16} strokeWidth={2.5} />
+                                    </button>
+                                </span>
+                            </h3>
+                        </div>
                         <div className="space-y-2 max-h-48 overflow-y-auto pr-2">
                             {clientProjects.length > 0 ? clientProjects.map(p => (
                                 <div key={p.id} onClick={() => setSelectedProjectForPopup(p)} className="p-3 bg-muted rounded-lg flex justify-between items-center cursor-pointer hover:bg-accent border border-transparent hover:border-primary/30 transition-all">
@@ -184,7 +198,7 @@ const Clients = ({ clients = [], projects = [], transactions = [], employees = [
     }, [clients, searchQuery]);
 
     if (view === 'detail' && selectedClient) {
-        return <ClientDetailView client={selectedClient} projects={projects} transactions={transactions} employees={employees} equipment={equipment} attendance={attendance} onNavigate={onNavigate} onBack={handleBackToList} />
+        return <ClientDetailView client={selectedClient} projects={projects} transactions={transactions} employees={employees} equipment={equipment} attendance={attendance} onNavigate={onNavigate} onBack={handleBackToList} onOpenModal={onOpenModal} />
     }
 
     return (
