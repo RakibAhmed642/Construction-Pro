@@ -33,95 +33,97 @@ const ClientDetailView = ({ client, projects = [], transactions = [], employees 
     if (!client) return null;
 
     return (
-        <div className="space-y-6 animate-fade-in-up">
-            <div className="bg-card rounded-xl p-6 shadow-sm border border-border">
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                    <div className="flex items-center gap-4">
-                        <button onClick={onBack} className="p-2 hover:bg-accent rounded-full transition-colors">
-                            <ChevronLeft size={24} className="text-muted-foreground" />
-                        </button>
-                        <div className="relative shrink-0 w-16 h-16 rounded-full shadow-sm border-4 border-card overflow-hidden bg-muted">
-                            {client.imageUrl ? (
-                                <img src={client.imageUrl} alt={client.name} className="w-full h-full object-cover" />
-                            ) : (
-                                <div className="w-full h-full bg-primary/10 flex items-center justify-center text-primary font-bold text-2xl">
-                                    {client.name?.charAt(0) || '?'}
+        <>
+            <div className="space-y-6 animate-fade-in-up">
+                <div className="bg-card rounded-xl p-6 shadow-sm border border-border">
+                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                        <div className="flex items-center gap-4">
+                            <button onClick={onBack} className="p-2 hover:bg-accent rounded-full transition-colors">
+                                <ChevronLeft size={24} className="text-muted-foreground" />
+                            </button>
+                            <div className="relative shrink-0 w-16 h-16 rounded-full shadow-sm border-4 border-card overflow-hidden bg-muted">
+                                {client.imageUrl ? (
+                                    <img src={client.imageUrl} alt={client.name} className="w-full h-full object-cover" />
+                                ) : (
+                                    <div className="w-full h-full bg-primary/10 flex items-center justify-center text-primary font-bold text-2xl">
+                                        {client.name?.charAt(0) || '?'}
+                                    </div>
+                                )}
+                            </div>
+                            <div>
+                                <h2 className="text-2xl font-bold text-card-foreground">{client.name}</h2>
+                                <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-muted-foreground text-sm mt-1">
+                                    {client.company && <span className="flex items-center gap-1.5 font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-md"><Building size={14} /> {client.company}</span>}
+                                    <span className="flex items-center gap-1.5"><Phone size={14} /> {client.phone || 'N/A'}</span>
+                                    {client.email && <span className="flex items-center gap-1.5"><Mail size={14} /> {client.email}</span>}
+                                    <span className="flex items-center gap-1.5"><MapPin size={14} /> {client.address || 'N/A'}</span>
                                 </div>
-                            )}
-                        </div>
-                        <div>
-                            <h2 className="text-2xl font-bold text-card-foreground">{client.name}</h2>
-                            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-muted-foreground text-sm mt-1">
-                                {client.company && <span className="flex items-center gap-1.5 font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-md"><Building size={14} /> {client.company}</span>}
-                                <span className="flex items-center gap-1.5"><Phone size={14} /> {client.phone || 'N/A'}</span>
-                                {client.email && <span className="flex items-center gap-1.5"><Mail size={14} /> {client.email}</span>}
-                                <span className="flex items-center gap-1.5"><MapPin size={14} /> {client.address || 'N/A'}</span>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="bg-card p-6 rounded-xl border border-border shadow-sm">
-                    <h3 className="font-bold text-card-foreground mb-4 flex items-center gap-2"><DollarSign size={18} className="text-green-500" /> {T.financialSummary || 'Financial Summary'}</h3>
-                    <div className="space-y-3">
-                        <div className="flex justify-between items-center p-3 bg-green-500/10 rounded-lg">
-                            <span className="text-sm font-medium text-green-700 flex items-center gap-2"><ArrowUpRight size={14} /> {T.totalBilled || 'Total Billed'}</span>
-                            <span className="font-bold text-lg text-green-800">৳{financialSummary.income.toLocaleString()}</span>
-                        </div>
-                        <div className="flex justify-between items-center p-3 bg-red-500/10 rounded-lg">
-                            <span className="text-sm font-medium text-red-700 flex items-center gap-2"><ArrowDownLeft size={14} /> {T.projectExpenses || 'Project Expenses'}</span>
-                            <span className="font-bold text-lg text-red-800">৳{financialSummary.expense.toLocaleString()}</span>
-                        </div>
-                    </div>
-                </div>
-                <div className="bg-card p-6 rounded-xl border border-border shadow-sm">
-                    <h3 className="font-bold text-card-foreground mb-4 flex items-center gap-2"><HardHat size={18} className="text-orange-500" /> {T.projectsWithCount ? T.projectsWithCount(clientProjects.length) : `Projects (${clientProjects.length})`}</h3>
-                    <div className="space-y-2 max-h-48 overflow-y-auto pr-2">
-                        {clientProjects.length > 0 ? clientProjects.map(p => (
-                            <div key={p.id} onClick={() => setSelectedProjectForPopup(p)} className="p-3 bg-muted rounded-lg flex justify-between items-center cursor-pointer hover:bg-accent border border-transparent hover:border-primary/30 transition-all">
-                                <div>
-                                    <p className="font-medium text-foreground">{p.name}</p>
-                                    <p className="text-xs text-muted-foreground">{p.location}</p>
-                                </div>
-                                <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${p.status === 'Ongoing' ? 'bg-orange-100 text-orange-700' : p.status === 'Completed' ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-700'}`}>{T[`status${p.status.replace(/\s/g, '')}`] || p.status}</span>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="bg-card p-6 rounded-xl border border-border shadow-sm">
+                        <h3 className="font-bold text-card-foreground mb-4 flex items-center gap-2"><DollarSign size={18} className="text-green-500" /> {T.financialSummary || 'Financial Summary'}</h3>
+                        <div className="space-y-3">
+                            <div className="flex justify-between items-center p-3 bg-green-500/10 rounded-lg">
+                                <span className="text-sm font-medium text-green-700 flex items-center gap-2"><ArrowUpRight size={14} /> {T.totalBilled || 'Total Billed'}</span>
+                                <span className="font-bold text-lg text-green-800">৳{financialSummary.income.toLocaleString()}</span>
                             </div>
-                        )) : <p className="text-muted-foreground text-sm text-center py-4">{T.noProjectsAssociated || 'No projects associated with this client.'}</p>}
+                            <div className="flex justify-between items-center p-3 bg-red-500/10 rounded-lg">
+                                <span className="text-sm font-medium text-red-700 flex items-center gap-2"><ArrowDownLeft size={14} /> {T.projectExpenses || 'Project Expenses'}</span>
+                                <span className="font-bold text-lg text-red-800">৳{financialSummary.expense.toLocaleString()}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="bg-card p-6 rounded-xl border border-border shadow-sm">
+                        <h3 className="font-bold text-card-foreground mb-4 flex items-center gap-2"><HardHat size={18} className="text-orange-500" /> {T.projectsWithCount ? T.projectsWithCount(clientProjects.length) : `Projects (${clientProjects.length})`}</h3>
+                        <div className="space-y-2 max-h-48 overflow-y-auto pr-2">
+                            {clientProjects.length > 0 ? clientProjects.map(p => (
+                                <div key={p.id} onClick={() => setSelectedProjectForPopup(p)} className="p-3 bg-muted rounded-lg flex justify-between items-center cursor-pointer hover:bg-accent border border-transparent hover:border-primary/30 transition-all">
+                                    <div>
+                                        <p className="font-medium text-foreground">{p.name}</p>
+                                        <p className="text-xs text-muted-foreground">{p.location}</p>
+                                    </div>
+                                    <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${p.status === 'Ongoing' ? 'bg-orange-100 text-orange-700' : p.status === 'Completed' ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-700'}`}>{T[`status${p.status.replace(/\s/g, '')}`] || p.status}</span>
+                                </div>
+                            )) : <p className="text-muted-foreground text-sm text-center py-4">{T.noProjectsAssociated || 'No projects associated with this client.'}</p>}
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div className="bg-card rounded-xl shadow-sm border border-border overflow-hidden">
-                <h3 className="font-bold text-card-foreground p-6 border-b border-border">{T.transactionHistory || 'Transaction History'}</h3>
-                <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
-                        <thead className="bg-muted/50">
-                            <tr>
-                                <th className="p-4 text-xs font-bold text-muted-foreground uppercase tracking-wider">{T.date || 'Date'}</th>
-                                <th className="p-4 text-xs font-bold text-muted-foreground uppercase tracking-wider">{T.description || 'Description'}</th>
-                                <th className="p-4 text-xs font-bold text-muted-foreground uppercase tracking-wider">{T.projects || 'Projects'}</th>
-                                <th className="p-4 text-xs font-bold text-muted-foreground uppercase tracking-wider">{T.type || 'Type'}</th>
-                                <th className="p-4 text-xs font-bold text-muted-foreground uppercase tracking-wider text-right">{T.amount || 'Amount'}</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-border">
-                            {clientTransactions.length > 0 ? clientTransactions.map(t => {
-                                const proj = clientProjects.find(p => p.id === t.projectId);
-                                return (
-                                    <tr key={t.id}>
-                                        <td className="p-4 text-sm text-muted-foreground font-mono">{t.date}</td>
-                                        <td className="p-4 text-sm font-medium text-foreground">{t.description}</td>
-                                        <td className="p-4 text-sm text-muted-foreground">{proj?.name || 'N/A'}</td>
-                                        <td className="p-4"><span className={`px-2 py-1 rounded text-xs font-semibold uppercase ${t.type === 'income' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>{T[t.type] || t.type}</span></td>
-                                        <td className={`p-4 text-right font-mono font-medium ${t.type === 'income' ? 'text-green-600' : 'text-red-600'}`}>{t.type === 'income' ? '+' : '-'}৳{Number(t.amount || 0).toLocaleString()}</td>
-                                    </tr>
-                                );
-                            }) : (
-                                <tr><td colSpan="5" className="p-12 text-center text-muted-foreground">{T.noTransactionsForClient || 'No transactions found.'}</td></tr>
-                            )}
-                        </tbody>
-                    </table>
+                <div className="bg-card rounded-xl shadow-sm border border-border overflow-hidden">
+                    <h3 className="font-bold text-card-foreground p-6 border-b border-border">{T.transactionHistory || 'Transaction History'}</h3>
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-left border-collapse">
+                            <thead className="bg-muted/50">
+                                <tr>
+                                    <th className="p-4 text-xs font-bold text-muted-foreground uppercase tracking-wider">{T.date || 'Date'}</th>
+                                    <th className="p-4 text-xs font-bold text-muted-foreground uppercase tracking-wider">{T.description || 'Description'}</th>
+                                    <th className="p-4 text-xs font-bold text-muted-foreground uppercase tracking-wider">{T.projects || 'Projects'}</th>
+                                    <th className="p-4 text-xs font-bold text-muted-foreground uppercase tracking-wider">{T.type || 'Type'}</th>
+                                    <th className="p-4 text-xs font-bold text-muted-foreground uppercase tracking-wider text-right">{T.amount || 'Amount'}</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-border">
+                                {clientTransactions.length > 0 ? clientTransactions.map(t => {
+                                    const proj = clientProjects.find(p => p.id === t.projectId);
+                                    return (
+                                        <tr key={t.id}>
+                                            <td className="p-4 text-sm text-muted-foreground font-mono">{t.date}</td>
+                                            <td className="p-4 text-sm font-medium text-foreground">{t.description}</td>
+                                            <td className="p-4 text-sm text-muted-foreground">{proj?.name || 'N/A'}</td>
+                                            <td className="p-4"><span className={`px-2 py-1 rounded text-xs font-semibold uppercase ${t.type === 'income' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>{T[t.type] || t.type}</span></td>
+                                            <td className={`p-4 text-right font-mono font-medium ${t.type === 'income' ? 'text-green-600' : 'text-red-600'}`}>{t.type === 'income' ? '+' : '-'}৳{Number(t.amount || 0).toLocaleString()}</td>
+                                        </tr>
+                                    );
+                                }) : (
+                                    <tr><td colSpan="5" className="p-12 text-center text-muted-foreground">{T.noTransactionsForClient || 'No transactions found.'}</td></tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
@@ -139,8 +141,8 @@ const ClientDetailView = ({ client, projects = [], transactions = [], employees 
                     />
                 </Modal>
             )}
-        </div>
-    )
+        </>
+    );
 }
 
 
