@@ -1,7 +1,7 @@
 'use client'; // এটি যোগ করা হয়েছে
 
 import React, { useState, useMemo, useContext } from 'react';
-import { Plus, Edit, Trash2, Phone, Building, ChevronLeft, Search, HardHat, DollarSign, Mail, ArrowUpRight, ArrowDownLeft, Users } from 'lucide-react';
+import { Plus, Edit, Trash2, Phone, Building, ChevronLeft, Search, HardHat, DollarSign, Mail, ArrowUpRight, ArrowDownLeft, Users, MapPin } from 'lucide-react';
 import { Modal } from '@/components/UI';
 import { ClientForm } from '@/components/Forms';
 import { SettingsContext } from '@/context/SettingsContext';
@@ -38,14 +38,22 @@ const ClientDetailView = ({ client, projects = [], transactions = [], onBack }) 
                         <button onClick={onBack} className="p-2 hover:bg-accent rounded-full transition-colors">
                             <ChevronLeft size={24} className="text-muted-foreground" />
                         </button>
-                        <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-2xl border-4 border-card shadow-sm">
-                            {client.name?.charAt(0) || '?'}
+                        <div className="relative shrink-0 w-16 h-16 rounded-full shadow-sm border-4 border-card overflow-hidden bg-muted">
+                            {client.imageUrl ? (
+                                <img src={client.imageUrl} alt={client.name} className="w-full h-full object-cover" />
+                            ) : (
+                                <div className="w-full h-full bg-primary/10 flex items-center justify-center text-primary font-bold text-2xl">
+                                    {client.name?.charAt(0) || '?'}
+                                </div>
+                            )}
                         </div>
                         <div>
                             <h2 className="text-2xl font-bold text-card-foreground">{client.name}</h2>
-                            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-muted-foreground text-sm mt-1">
+                            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-muted-foreground text-sm mt-1">
+                                {client.company && <span className="flex items-center gap-1.5 font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-md"><Building size={14} /> {client.company}</span>}
                                 <span className="flex items-center gap-1.5"><Phone size={14} /> {client.phone || 'N/A'}</span>
-                                <span className="flex items-center gap-1.5"><Building size={14} /> {client.address || 'N/A'}</span>
+                                {client.email && <span className="flex items-center gap-1.5"><Mail size={14} /> {client.email}</span>}
+                                <span className="flex items-center gap-1.5"><MapPin size={14} /> {client.address || 'N/A'}</span>
                             </div>
                         </div>
                     </div>
@@ -129,8 +137,8 @@ const Clients = ({ clients = [], projects = [], transactions = [], onDelete, onO
     const [view, setView] = useState('list'); // 'list' or 'detail'
     const [searchQuery, setSearchQuery] = useState('');
 
-    const handleEdit = (e, client) => { 
-        e.stopPropagation(); 
+    const handleEdit = (e, client) => {
+        e.stopPropagation();
         onOpenModal?.('edit_client', client);
     };
     const handleDeleteClick = (e, id) => { e.stopPropagation(); onDelete?.(id); };
@@ -139,7 +147,7 @@ const Clients = ({ clients = [], projects = [], transactions = [], onDelete, onO
         setSelectedClient(client);
         setView('detail');
     };
-    
+
     const handleBackToList = () => {
         setSelectedClient(null);
         setView('list');
@@ -147,9 +155,11 @@ const Clients = ({ clients = [], projects = [], transactions = [], onDelete, onO
 
     const filteredClients = useMemo(() => {
         if (!clients) return [];
-        return clients.filter(c => 
+        return clients.filter(c =>
             c.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
             c.phone?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            c.company?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            c.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
             c.address?.toLowerCase().includes(searchQuery.toLowerCase())
         );
     }, [clients, searchQuery]);
@@ -157,51 +167,64 @@ const Clients = ({ clients = [], projects = [], transactions = [], onDelete, onO
     if (view === 'detail' && selectedClient) {
         return <ClientDetailView client={selectedClient} projects={projects} transactions={transactions} onBack={handleBackToList} />
     }
-  
+
     return (
-      <div className="space-y-6">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <h2 className="text-2xl font-bold text-foreground">{T.clientDirectory || 'Client Directory'}</h2>
-          <div className="flex gap-3 w-full sm:w-auto">
-            <div className="relative flex-1 sm:flex-initial">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={18} />
-                <input 
-                  type="text" 
-                  placeholder={T.searchClients || 'Search clients...'}
-                  className="w-full pl-10 pr-4 py-2 border border-border bg-background rounded-lg outline-none focus:ring-2 focus:ring-primary"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-            </div>
-            <button onClick={() => onOpenModal?.('clients')} className="bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-lg flex items-center gap-2 transition-colors shadow-sm"><Plus size={20} /><span>{T.addClient || 'Add Client'}</span></button>
-          </div>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredClients.map(client => {
-            const clientProjectsCount = projects.filter(p => p.clientId === client.id).length;
-            return (
-                <div key={client.id} onClick={() => handleViewDetails(client)} className="bg-card p-6 rounded-xl border border-border shadow-sm hover:shadow-lg hover:border-primary/50 transition-all cursor-pointer relative group">
-                  <div className="absolute top-4 right-4 flex gap-2 opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity z-10">
-                      <button onClick={(e) => handleEdit(e, client)} className="p-1.5 bg-card border border-border text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-lg shadow-sm"><Edit size={16} /></button>
-                      <button onClick={(e) => handleDeleteClick(e, client.id)} className="p-1.5 bg-card border border-border text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg shadow-sm"><Trash2 size={16} /></button>
-                   </div>
-                  <div className="flex items-center gap-4 mb-4">
-                    <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xl border-2 border-card shadow-sm">{client.name?.charAt(0) || '?'}</div>
-                    <div>
-                        <h3 className="font-bold text-card-foreground text-lg group-hover:text-primary transition-colors">{client.name}</h3>
-                        <p className="text-sm text-muted-foreground">{client.address || 'N/A'}</p>
+        <div className="space-y-6">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <h2 className="text-2xl font-bold text-foreground">{T.clientDirectory || 'Client Directory'}</h2>
+                <div className="flex gap-3 w-full sm:w-auto">
+                    <div className="relative flex-1 sm:flex-initial">
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={18} />
+                        <input
+                            type="text"
+                            placeholder={T.searchClients || 'Search clients...'}
+                            className="w-full pl-10 pr-4 py-2 border border-border bg-background rounded-lg outline-none focus:ring-2 focus:ring-primary"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                        />
                     </div>
-                  </div>
-                  <div className="space-y-3 text-sm border-t border-border pt-4">
-                     <div className="flex justify-between items-center"><span className="text-muted-foreground flex items-center gap-2"><Phone size={14}/> {T.contact || 'Contact'}</span><span className="font-medium text-foreground">{client.phone || 'N/A'}</span></div>
-                     <div className="flex justify-between items-center"><span className="text-muted-foreground flex items-center gap-2"><HardHat size={14}/> {T.projects || 'Projects'}</span><span className="font-bold text-foreground bg-muted px-2 rounded-full">{clientProjectsCount}</span></div>
-                  </div>
+                    <button onClick={() => onOpenModal?.('clients')} className="bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-lg flex items-center gap-2 transition-colors shadow-sm"><Plus size={20} /><span>{T.addClient || 'Add Client'}</span></button>
                 </div>
-            )
-          })}
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredClients.map(client => {
+                    const clientProjectsCount = projects.filter(p => p.clientId === client.id).length;
+                    return (
+                        <div key={client.id} onClick={() => handleViewDetails(client)} className="bg-card p-6 rounded-xl border border-border shadow-sm hover:shadow-lg hover:border-primary/50 transition-all cursor-pointer relative group">
+                            <div className="absolute top-4 right-4 flex gap-2 opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                                <button onClick={(e) => handleEdit(e, client)} className="p-1.5 bg-card border border-border text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-lg shadow-sm"><Edit size={16} /></button>
+                                <button onClick={(e) => handleDeleteClick(e, client.id)} className="p-1.5 bg-card border border-border text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg shadow-sm"><Trash2 size={16} /></button>
+                            </div>
+                            <div className="flex items-center gap-4 mb-4">
+                                <div className="relative shrink-0 w-14 h-14 rounded-full shadow-sm border-2 border-card overflow-hidden bg-muted">
+                                    {client.imageUrl ? (
+                                        <img src={client.imageUrl} alt={client.name} className="w-full h-full object-cover" />
+                                    ) : (
+                                        <div className="w-full h-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xl">
+                                            {client.name?.charAt(0) || '?'}
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="min-w-0">
+                                    <h3 className="font-bold text-card-foreground text-lg group-hover:text-primary transition-colors truncate">{client.name}</h3>
+                                    {client.company ? (
+                                        <p className="text-[11px] font-bold uppercase tracking-wider text-primary truncate">{client.company}</p>
+                                    ) : (
+                                        <p className="text-sm text-muted-foreground truncate">{client.address || 'N/A'}</p>
+                                    )}
+                                </div>
+                            </div>
+                            <div className="space-y-3 text-sm border-t border-border pt-4">
+                                <div className="flex justify-between items-center"><span className="text-muted-foreground flex items-center gap-2 max-w-[40%]"><Phone size={14} /> {T.contact || 'Contact'}</span><span className="font-medium text-foreground truncate max-w-[60%]">{client.phone || 'N/A'}</span></div>
+                                {client.email && <div className="flex justify-between items-center"><span className="text-muted-foreground flex items-center gap-2 max-w-[30%]"><Mail size={14} /> {T.email || 'Email'}</span><span className="font-medium text-foreground truncate max-w-[70%]">{client.email}</span></div>}
+                                <div className="flex justify-between items-center"><span className="text-muted-foreground flex items-center gap-2"><HardHat size={14} /> {T.projects || 'Projects'}</span><span className="font-bold text-foreground bg-muted px-2 rounded-full">{clientProjectsCount}</span></div>
+                            </div>
+                        </div>
+                    )
+                })}
+            </div>
+            {filteredClients.length === 0 && <div className="col-span-full bg-card p-12 rounded-xl border-2 border-dashed border-border text-center text-muted-foreground"><Users size={48} className="mx-auto mb-4 text-muted" /><p>{T.noClientsFound || 'No clients found.'}</p></div>}
         </div>
-         {filteredClients.length === 0 && <div className="col-span-full bg-card p-12 rounded-xl border-2 border-dashed border-border text-center text-muted-foreground"><Users size={48} className="mx-auto mb-4 text-muted" /><p>{T.noClientsFound || 'No clients found.'}</p></div>}
-      </div>
     );
 };
 
