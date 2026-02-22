@@ -111,8 +111,8 @@ const TaskEditDrawer = ({ task, onClose, onSave, T = {} }) => {
                                         key={status}
                                         onClick={() => setCurrentTask({ ...currentTask, status: status })}
                                         className={`px-4 py-3 rounded-xl flex items-center justify-between border transition-all duration-200 group ${isActive
-                                                ? 'bg-primary/10 border-primary ring-1 ring-primary/20'
-                                                : 'bg-background border-border hover:border-primary/30'
+                                            ? 'bg-primary/10 border-primary ring-1 ring-primary/20'
+                                            : 'bg-background border-border hover:border-primary/30'
                                             }`}
                                     >
                                         <div className="flex items-center gap-3">
@@ -139,8 +139,8 @@ const TaskEditDrawer = ({ task, onClose, onSave, T = {} }) => {
                                         key={priority}
                                         onClick={() => setCurrentTask({ ...currentTask, priority: priority })}
                                         className={`py-3 rounded-xl flex flex-col items-center justify-center gap-2 border transition-all duration-200 ${isActive
-                                                ? `${bg} ring-1 ring-inset`
-                                                : 'bg-background border-border hover:bg-slate-50'
+                                            ? `${bg} ring-1 ring-inset`
+                                            : 'bg-background border-border hover:bg-slate-50'
                                             }`}
                                     >
                                         <Icon size={18} className={isActive ? 'text-current' : 'text-slate-400'} />
@@ -823,6 +823,74 @@ const ProjectDetailsContent = ({ project, transactions = [], employees = [], equ
 
     return (
         <div className="space-y-6">
+            {/* Project Meta Info & Map Section */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 bg-card rounded-2xl border border-border overflow-hidden shadow-sm">
+
+                {/* Details Side */}
+                <div className="p-6 md:p-8 space-y-6">
+                    <div>
+                        <div className="flex justify-between items-start gap-4 mb-3">
+                            <h2 className="text-2xl font-bold tracking-tight text-foreground leading-tight">{project.name}</h2>
+                            <span className={`shrink-0 px-3 py-1 text-[11px] font-bold uppercase tracking-wider rounded-md border shadow-sm ${project.status === 'Completed' ? 'bg-green-100/50 text-green-700 border-green-200' : project.status === 'Ongoing' ? 'bg-blue-100/50 text-blue-700 border-blue-200' : 'bg-orange-100/50 text-orange-700 border-orange-200'}`}>
+                                {project.status || 'Active'}
+                            </span>
+                        </div>
+                        <p className="text-muted-foreground text-sm font-medium flex items-center gap-2">
+                            <MapPin size={16} className="text-primary/70 shrink-0" />
+                            {project.location || 'Location not specified'}
+                        </p>
+                    </div>
+
+                    {project.description && (
+                        <div className="bg-muted/30 p-4 rounded-xl border border-border/50">
+                            <p className="text-sm leading-relaxed text-muted-foreground">
+                                {project.description}
+                            </p>
+                        </div>
+                    )}
+
+                    <div className="grid grid-cols-2 gap-4 pt-2">
+                        <div className="space-y-1.5">
+                            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-1.5">
+                                <Calendar size={14} className="opacity-70" /> {T.startDate || 'Start Date'}
+                            </span>
+                            <p className="font-semibold text-foreground text-sm">
+                                {project.startDate || (project.createdAt ? new Date(project.createdAt.seconds ? project.createdAt.seconds * 1000 : project.createdAt).toLocaleDateString() : 'N/A')}
+                            </p>
+                        </div>
+                        <div className="space-y-1.5">
+                            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-1.5">
+                                <DollarSign size={14} className="opacity-70" /> {T.estimatedBudget || 'Estimated Budget'}
+                            </span>
+                            <p className="font-bold text-lg text-primary tracking-tight">
+                                ৳{Number(project.budget || 0).toLocaleString()}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Map Side */}
+                <div className="min-h-[250px] lg:min-h-full bg-muted/10 relative group border-t border-border lg:border-t-0 lg:border-l">
+                    {project.location ? (
+                        <iframe
+                            src={`https://maps.google.com/maps?q=${encodeURIComponent(project.location)}&t=&z=13&ie=UTF8&iwloc=&output=embed`}
+                            width="100%"
+                            height="100%"
+                            style={{ border: 0, position: 'absolute', inset: 0 }}
+                            allowFullScreen=""
+                            loading="lazy"
+                            referrerPolicy="no-referrer-when-downgrade"
+                            className="transition-opacity duration-300"
+                        />
+                    ) : (
+                        <div className="absolute inset-0 flex flex-col items-center justify-center text-muted-foreground p-6 text-center">
+                            <MapPin size={32} className="mb-3 opacity-20" />
+                            <p className="font-medium text-sm">No location provided for map.</p>
+                        </div>
+                    )}
+                </div>
+            </div>
+
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 <DetailCard icon={ArrowUpRight} label={T.totalIncome || 'Total Income'} value={projectData.income} colorClass="bg-green-500" section="transactions" formatAsCurrency />
                 <DetailCard icon={ArrowDownLeft} label={T.totalExpenses || 'Total Expenses'} value={projectData.expense} colorClass="bg-red-500" section="transactions" formatAsCurrency />
